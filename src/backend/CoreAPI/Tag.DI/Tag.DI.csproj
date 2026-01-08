@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Tag.Client\Tag.Client.csproj" />
+      <ProjectReference Include="..\Tag.DataAccess\Tag.DataAccess.csproj" />
+      <ProjectReference Include="..\Tag.Services\Tag.Services.csproj" />
+    </ItemGroup>
+
+</Project>

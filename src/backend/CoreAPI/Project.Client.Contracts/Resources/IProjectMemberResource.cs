@@ -1,0 +1,18 @@
+﻿using Project.Contracts.Dtos;
+using Project.Contracts.Parameters.ProjectMember;
+using Project.Contracts.Result;
+
+namespace Project.Client.Contracts.Resources;
+
+public interface IProjectMemberResource
+{
+    public Task<GetManyProjectMembersByProjectIdResult> GetManyAsync(GetManyProjectMembersByProjectIdParameters parameters);
+    
+    public Task<ProjectMemberDto> GetAsync(GetProjectMemberByIdParameters parameters);
+    
+    public Task<ProjectMemberDto> CreateAsync(CreateProjectMemberParameters parameters);
+    
+    public Task<ProjectMemberDto> UpdateAsync(UpdateProjectMemberParameters parameters);
+    
+    public Task DeleteAsync(DeleteProjectMemberParameters parameters);
+}

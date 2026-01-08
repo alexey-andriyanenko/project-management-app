@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Tag.Client.Contracts\Tag.Client.Contracts.csproj" />
+      <ProjectReference Include="..\Tag.Services\Tag.Services.csproj" />
+    </ItemGroup>
+
+</Project>

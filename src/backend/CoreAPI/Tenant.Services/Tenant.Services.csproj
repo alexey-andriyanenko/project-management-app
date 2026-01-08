@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Shared.String.Extensions\Shared.String.Extensions.csproj" />
+      <ProjectReference Include="..\Tenant.Contracts\Tenant.Contracts.csproj" />
+      <ProjectReference Include="..\Tenant.DataAccess\Tenant.DataAccess.csproj" />
+    </ItemGroup>
+
+</Project>

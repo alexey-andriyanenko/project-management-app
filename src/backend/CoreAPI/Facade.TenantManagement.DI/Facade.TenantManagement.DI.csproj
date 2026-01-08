@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Facade.TenantManagement.Controllers\Facade.TenantManagement.Controllers.csproj" />
+      <ProjectReference Include="..\Facade.TenantManagement.Services\Facade.TenantManagement.Services.csproj" />
+      <ProjectReference Include="..\Tenant.DI\Tenant.DI.csproj" />
+    </ItemGroup>
+
+</Project>
