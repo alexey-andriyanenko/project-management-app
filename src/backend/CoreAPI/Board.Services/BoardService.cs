@@ -1,4 +1,5 @@
 ﻿using Board.Contracts.Exceptions;
+using Board.Contracts.Parameters.Board;
 using Board.Contracts.Results;
 using Board.Contracts.Services;
 using Board.DataAccess;
@@ -111,5 +112,19 @@ public class BoardService(BoardDbContext dbContext) : IBoardService
         
         dbContext.Boards.Remove(board);
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteManyAsync(DeleteManyBoardsByTenantId parameters, CancellationToken cancellationToken = default)
+    {
+        await dbContext.Boards
+            .Where(b => b.TenantId == parameters.TenantId)
+            .ExecuteDeleteAsync(cancellationToken);
+    }
+    
+    public async Task DeleteManyAsync(DeleteManyBoardsByProjectId parameters, CancellationToken cancellationToken = default)
+    {
+        await dbContext.Boards
+            .Where(b => b.TenantId == parameters.TenantId && b.ProjectId == parameters.ProjectId)
+            .ExecuteDeleteAsync(cancellationToken);
     }
 }

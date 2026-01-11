@@ -18,6 +18,7 @@
       <ProjectReference Include="..\Facade.ProjectManagement.DI\Facade.ProjectManagement.DI.csproj" />
       <ProjectReference Include="..\Facade.TagManagement.DI\Facade.TagManagement.DI.csproj" />
       <ProjectReference Include="..\Facade.TenantManagement.DI\Facade.TenantManagement.DI.csproj" />
+      <ProjectReference Include="..\Infrastructure.EventBus.InMemory\Infrastructure.EventBus.InMemory.csproj" />
     </ItemGroup>
 
 </Project>

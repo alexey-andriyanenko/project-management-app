@@ -15,4 +15,8 @@ public interface IBoardService
     public Task<BoardDto> UpdateAsync(UpdateBoardParameters parameters);
     
     public Task DeleteAsync(DeleteBoardParameters parameters);
+    
+    public Task DeleteManyAsync(DeleteManyBoardsByTenantId parameters, CancellationToken cancellationToken);
+    
+    public Task DeleteManyAsync(DeleteManyBoardsByProjectId parameters, CancellationToken cancellationToken);
 }

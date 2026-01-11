@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddTenantModule(configuration);
         services.AddFacadeTenantManagementServices();
-
+        
         return services;
     }
 

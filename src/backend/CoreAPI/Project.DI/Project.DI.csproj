@@ -13,6 +13,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Project.Client\Project.Client.csproj" />
       <ProjectReference Include="..\Project.DataAccess\Project.DataAccess.csproj" />
+      <ProjectReference Include="..\Project.Events\Project.Events.csproj" />
       <ProjectReference Include="..\Project.Services\Project.Services.csproj" />
     </ItemGroup>
 

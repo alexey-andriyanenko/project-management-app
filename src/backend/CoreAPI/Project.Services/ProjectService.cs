@@ -96,4 +96,11 @@ public class ProjectService(ProjectDbContext dbContext) : IProjectService
         
         await dbContext.SaveChangesAsync();
     }
+
+    public async Task DeleteManyAsync(DeleteManyProjectsByTenantIdParameters parameters, CancellationToken cancellationToken = default)
+    {
+        await dbContext.Projects
+            .Where(x => x.TenantId == parameters.TenantId)
+            .ExecuteDeleteAsync(cancellationToken);
+    }
 }

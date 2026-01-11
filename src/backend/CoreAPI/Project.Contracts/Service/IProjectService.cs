@@ -16,4 +16,6 @@ public interface IProjectService
     public Task<ProjectDto> UpdateAsync(UpdateProjectParameters parameters);
     
     public Task DeleteAsync(DeleteProjectParameters parameters);
+    
+    public Task DeleteManyAsync(DeleteManyProjectsByTenantIdParameters parameters, CancellationToken cancellationToken = default);
 }

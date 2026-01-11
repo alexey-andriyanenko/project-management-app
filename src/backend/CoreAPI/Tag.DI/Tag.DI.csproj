@@ -13,6 +13,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Tag.Client\Tag.Client.csproj" />
       <ProjectReference Include="..\Tag.DataAccess\Tag.DataAccess.csproj" />
+      <ProjectReference Include="..\Tag.Events\Tag.Events.csproj" />
       <ProjectReference Include="..\Tag.Services\Tag.Services.csproj" />
     </ItemGroup>
 

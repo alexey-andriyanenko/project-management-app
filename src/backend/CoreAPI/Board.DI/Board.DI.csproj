@@ -13,6 +13,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Board.Client\Board.Client.csproj" />
       <ProjectReference Include="..\Board.DataAccess\Board.DataAccess.csproj" />
+      <ProjectReference Include="..\Board.Events\Board.Events.csproj" />
       <ProjectReference Include="..\Board.Services\Board.Services.csproj" />
     </ItemGroup>
 

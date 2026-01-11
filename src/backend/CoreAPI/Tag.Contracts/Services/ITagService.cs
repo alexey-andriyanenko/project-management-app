@@ -15,4 +15,12 @@ public interface ITagService
     public Task<TagDto> UpdateAsync(UpdateTagParameters parameters);
     
     public Task DeleteAsync(DeleteTagParameters parameters);
+    
+    public Task DeleteManyAsync(DeleteManyTagsByTenantId parameters, CancellationToken cancellationToken);
+    
+    public Task DeleteManyAsync(DeleteManyTagsByProjectId parameters, CancellationToken cancellationToken);
+    
+    public Task SeedTagsForTenantAsync(SeedTagsForTenantParameters parameters, CancellationToken cancellationToken);
+    
+    public Task SeedTagsForProjectAsync(SeedTagsForProjectParameters parameters, CancellationToken cancellationToken);
 }

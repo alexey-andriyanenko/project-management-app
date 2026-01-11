@@ -3,6 +3,7 @@ using Facade.IdentityManagement.DI;
 using Facade.ProjectManagement.DI;
 using Facade.TagManagement.DI;
 using Facade.TenantManagement.DI;
+using Infrastructure.EventBus.InMemory.DI;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(x =>
         x.SetIsOriginAllowed(_ => true).AllowAnyMethod().AllowAnyHeader().AllowCredentials()));
+
+builder.Services.AddInMemoryEventBus();
 
 builder.Services
     .AddFacadeIdentityManagementModule(configuration)
