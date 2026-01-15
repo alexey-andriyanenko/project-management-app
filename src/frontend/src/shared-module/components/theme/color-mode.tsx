@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-refresh/only-export-components */
 
 import type { IconButtonProps, SpanProps } from "@chakra-ui/react";
 import { ClientOnly, IconButton, Skeleton, Span } from "@chakra-ui/react";

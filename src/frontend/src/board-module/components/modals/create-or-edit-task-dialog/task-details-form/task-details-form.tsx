@@ -45,11 +45,13 @@ export const TaskDetailsForm: React.FC<TaskDetailsFormProps> = ({ board }) => {
 
     if (tagStore.tags.length === 0) {
       tagStore.fetchTagsByProjectId(
-        organizationStore.currentOrganization!.id,
-        board.projectId
+          {
+            organizationId: organizationStore.currentOrganization!.id,
+            projectId: board.projectId
+          }
       );
     }
-  }, []);
+  }, [board.projectId, organizationStore.currentOrganization, tagStore]);
 
   const boardColumnsCollection = React.useMemo(() => {
     return createListCollection({

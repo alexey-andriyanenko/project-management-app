@@ -47,7 +47,7 @@ const BoardWorkspace: React.FC = observer(() => {
         console.error("Failed to fetch tags for the project:", error);
       })
       .finally(() => setLoadingTags(false));
-  }, [boardStore.currentBoard, organizationStore.currentOrganization, taskStore]);
+  }, [boardStore.currentBoard, organizationStore.currentOrganization, tagStore, taskStore]);
 
   const handleSearch = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -65,7 +65,7 @@ const BoardWorkspace: React.FC = observer(() => {
         search: value,
       });
     }, 300);
-  }, []);
+  }, [boardStore.currentBoard, organizationStore.currentOrganization, taskStore]);
 
   return (
     <Flex flex="1" direction="row">

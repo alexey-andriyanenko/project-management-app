@@ -12,9 +12,8 @@ export function resolverFactory<TFieldValues extends FieldValues>(
       const message = result[name];
       if (!message) continue;
 
-      // No idea how to resolve this error
+      // @ts-expect-error No idea how to resolve this error
       // TS2322: Type '{ type: "manual"; message: NonNullable  [Extract ]>; }' is not assignable to type 'FieldErrors [Extract ]'.
-      // @ts-ignore
       errors[name] = {
         type: "manual",
         message,

@@ -23,7 +23,7 @@ const OrganizationUsers: React.FC = observer(() => {
         console.error("Failed to fetch organization users:", error);
         setLoading(false);
       });
-  }, []);
+  }, [organizationStore.currentOrganization, organizationUserStore]);
 
   const handleCreateUser = () => {
     modalsStore.open("CreateOrEditOrganizationUserDialog", {

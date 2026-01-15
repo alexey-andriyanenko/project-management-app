@@ -7,13 +7,13 @@ export interface IUseDebounce {
 export const useDebounce: IUseDebounce = (delay) => {
   const timerRef = useRef<NodeJS.Timeout>();
 
+  const resetDebounce = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+  };
+
   useEffect(() => {
     return () => resetDebounce();
   }, []);
-
-  const resetDebounce = () => {
-    clearTimeout(timerRef.current);
-  };
 
   return (callback: VoidFunction) => {
     resetDebounce();

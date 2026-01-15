@@ -36,7 +36,7 @@ const Boards: React.FC = observer(() => {
         console.error("Failed to fetch boards:", error);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [boardStore, organizationStore.currentOrganization, projectStore.currentProject]);
 
   const handleCreate = () => {
     boardModalsStore.open("CreateOrEditBoardDialog", {

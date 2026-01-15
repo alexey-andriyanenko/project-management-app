@@ -27,7 +27,7 @@ export const ProjectUsers: React.FC = observer(() => {
         console.error("Failed to fetch projects:", error);
         setLoading(false);
       });
-  }, []);
+  }, [organizationStore.currentOrganization, projectStore.currentProject, projectUserStore]);
 
   const [loading, setLoading] = React.useState(true);
 

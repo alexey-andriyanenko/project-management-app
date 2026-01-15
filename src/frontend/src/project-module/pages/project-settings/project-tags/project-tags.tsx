@@ -28,7 +28,7 @@ export const ProjectTags: React.FC = observer(() => {
         console.error("Failed to fetch tags:", error);
         setLoading(false);
       });
-  }, []);
+  }, [organizationStore.currentOrganization, projectStore.currentProject, tagStore]);
 
   const handleCreate = async () => {
     modalsStore.open("CreateOrEditTagDialog", {
