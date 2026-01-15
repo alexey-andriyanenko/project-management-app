@@ -11,6 +11,9 @@ public class ProjectResource(IProjectService projectService) : IProjectResource
 {
     public Task<ProjectDto> GetAsync(GetProjectByIdParameters parameters)
         => projectService.GetAsync(parameters);
+    
+    public Task<ProjectDto> GetAsync(GetProjectBySlugParameters parameters)
+        => projectService.GetAsync(parameters);
 
     public Task<GetManyProjectsByTenantIdResult> GetManyAsync(GetManyProjectsByTenantIdParameters parameters)
         => projectService.GetManyAsync(parameters);

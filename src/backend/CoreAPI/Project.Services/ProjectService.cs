@@ -25,7 +25,24 @@ public class ProjectService(ProjectDbContext dbContext) : IProjectService
 
         return project.ToDto();
     }
-    
+
+    public async Task<ProjectDto> GetAsync(GetProjectBySlugParameters parameters)
+    {
+        var project = await dbContext.Projects.FirstOrDefaultAsync(x => x.TenantId == parameters.TenantId && x.Slug == parameters.Slug);
+        if (project == null)
+        {
+            throw new ProjectNotFoundException(parameters.Slug);
+        }
+        
+        var member = await dbContext.ProjectMembers.FirstOrDefaultAsync(x => x.ProjectId == project.Id && x.UserId == parameters.MemberId);
+        if (member == null)
+        {
+            throw new ProjectNotFoundException(parameters.Slug);
+        }
+        
+        return project.ToDto();
+    }
+
     public async Task<GetManyProjectsByTenantIdResult> GetManyAsync(GetManyProjectsByTenantIdParameters parameters)
     {
         var projects = await dbContext.Projects

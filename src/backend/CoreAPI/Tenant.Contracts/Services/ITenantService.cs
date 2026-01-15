@@ -6,6 +6,8 @@ namespace Tenant.Contracts.Services;
 
 public interface ITenantService
 {
+    public Task<TenantDto> GetAsync(GetTenantBySlugParameters parameters);
+    
     public Task<GetManyTenantsByUserIdResult> GetManyAsync(GetManyTenantsByUserIdParameters parameters);
 
     public Task<TenantDto> CreateAsync(CreateTenantParameters parameters);

@@ -8,6 +8,8 @@ namespace Project.Client.Contracts.Resources;
 public interface IProjectResource
 {
     public Task<ProjectDto> GetAsync(GetProjectByIdParameters parameters);
+    
+    public Task<ProjectDto> GetAsync(GetProjectBySlugParameters parameters);
 
     public Task<GetManyProjectsByTenantIdResult> GetManyAsync(GetManyProjectsByTenantIdParameters parameters);
 

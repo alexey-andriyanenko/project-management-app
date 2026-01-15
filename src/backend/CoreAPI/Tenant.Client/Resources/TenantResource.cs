@@ -8,6 +8,9 @@ namespace Tenant.Client.Resources;
 
 public class TenantResource(ITenantService tenantService) : ITenantResource
 {
+    public Task<TenantDto> GetAsync(GetTenantBySlugParameters parameters)
+        => tenantService.GetAsync(parameters);
+    
     public Task<GetManyTenantsByUserIdResult> GetManyAsync(GetManyTenantsByUserIdParameters parameters)
         => tenantService.GetManyAsync(parameters);
     

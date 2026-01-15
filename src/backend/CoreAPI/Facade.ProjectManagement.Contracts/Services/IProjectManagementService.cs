@@ -8,6 +8,8 @@ public interface IProjectManagementService
 {
     public Task<GetManyProjectsByTenantIdResult> GetManyAsync(GetManyProjectsByTenantIdParameters parameters);
     
+    public Task<ProjectDto> GetAsync(GetProjectBySlugParameters parameters);
+    
     public Task<ProjectDto> GetAsync(GetProjectByIdParameters parameters);
     
     public Task<ProjectDto> CreateAsync(CreateProjectParameters parameters);

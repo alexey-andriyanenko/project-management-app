@@ -1,0 +1,36 @@
+import React from "react";
+import { observer } from "mobx-react-lite";
+
+import { ModalsStore } from "../store";
+import type {
+  ModalsProviderRegistryGuard,
+  ModalsStoreRegistryGuard,
+} from "src/modals-module/modals.types";
+import type { ModalsPropsBase } from "src/modals-module";
+import { Portal } from "@chakra-ui/react";
+
+export interface IModalsProviderProps<ModalName extends string> {
+  store: ModalsStore<ModalName, ModalsStoreRegistryGuard<ModalName>>;
+  providerRegistry: ModalsProviderRegistryGuard<ModalName>;
+}
+
+export const ModalsProvider = observer(
+  <ModalName extends string>({ store, providerRegistry }: IModalsProviderProps<ModalName>) => {
+    return (
+      <Portal>
+        {Object.entries(store.registry).map(([name, props]) => {
+          const ModalComponent = providerRegistry[name as ModalName] as React.FC<ModalsPropsBase>;
+
+          return (
+            <ModalComponent
+              key={name}
+              {...(props as ModalsPropsBase)}
+              isOpen
+              onClose={() => store.close(name as ModalName)}
+            />
+          );
+        })}
+      </Portal>
+    );
+  },
+);

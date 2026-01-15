@@ -1,9 +1,11 @@
 ﻿using Facade.IdentityManagement.Contracts.Results;
 using Facade.IdentityManagement.Contracts.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Facade.IdentityManagement.Controllers;
 
+[AllowAnonymous]
 [ApiController]
 [Route("api/v1/auth")]
 public class AuthManagementController(IAuthManagementService authManagementService)

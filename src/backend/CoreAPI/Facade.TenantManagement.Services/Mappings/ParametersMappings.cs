@@ -2,6 +2,15 @@
 
 public static class ParametersMappings
 {
+    public static Tenant.Contracts.Parameters.GetTenantBySlugParameters ToCoreParameters(this Facade.TenantManagement.Contracts.Parameters.GetTenantBySlugParameters parameters) 
+    {
+        return new Tenant.Contracts.Parameters.GetTenantBySlugParameters
+        {
+            MemberId = parameters.MemberId,
+            Slug = parameters.Slug,
+        };
+    }
+    
     public static Tenant.Contracts.Parameters.GetManyTenantsByUserIdParameters ToCoreParameters(this Facade.TenantManagement.Contracts.Parameters.GetManyTenantsByUserIdParameters parameters) 
     {
         return new Tenant.Contracts.Parameters.GetManyTenantsByUserIdParameters

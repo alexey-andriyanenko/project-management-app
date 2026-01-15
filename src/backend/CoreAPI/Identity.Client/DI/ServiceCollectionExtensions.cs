@@ -9,9 +9,9 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddIdentityClient(this IServiceCollection services)
     {
-        services.AddTransient<IAuthResource, AuthResource>();
-        services.AddTransient<IUserResource, UserResource>();
-        services.AddHttpClient<IIdentityClient, IdentityClient>();
+        services.AddScoped<IAuthResource, AuthResource>();
+        services.AddScoped<IUserResource, UserResource>();
+        services.AddScoped<IIdentityClient, IdentityClient>();
         
         return services;
     }

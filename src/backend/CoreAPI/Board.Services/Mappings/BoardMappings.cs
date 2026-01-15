@@ -34,7 +34,7 @@ public static class BoardMappings
         };
     }
     
-    private static BoardTypeDto ToDto(this BoardTypeEntity entity)
+    public static BoardTypeDto ToDto(this BoardTypeEntity entity)
     {
         return new BoardTypeDto()
         {

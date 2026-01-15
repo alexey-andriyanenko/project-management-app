@@ -11,6 +11,8 @@ public interface IProjectService
     
     public Task<ProjectDto> GetAsync(GetProjectByIdParameters parameters);
     
+    public Task<ProjectDto> GetAsync(GetProjectBySlugParameters parameters);
+    
     public Task<ProjectDto> CreateAsync(CreateProjectParameters parameters);
     
     public Task<ProjectDto> UpdateAsync(UpdateProjectParameters parameters);

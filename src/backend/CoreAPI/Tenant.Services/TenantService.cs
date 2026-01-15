@@ -12,6 +12,27 @@ namespace Tenant.Services;
 
 public class TenantService(TenantDbContext dbContext) : ITenantService
 {
+    public async Task<TenantDto> GetAsync(GetTenantBySlugParameters parameters)
+    {
+        var tenant = await dbContext.Tenants
+            .FirstOrDefaultAsync(t => t.Slug == parameters.Slug);
+        
+        if (tenant == null)
+        {
+            throw new TenantNotFoundException(parameters.Slug);
+        }
+        
+        var member = await dbContext.TenantMembers
+            .FirstOrDefaultAsync(tm => tm.TenantId == tenant!.Id && tm.UserId == parameters.MemberId);
+
+        if (member == null)
+        {
+            throw new TenantNotFoundException(parameters.Slug);
+        }
+        
+        return tenant.ToDto();
+    }
+
     public async Task<GetManyTenantsByUserIdResult> GetManyAsync(GetManyTenantsByUserIdParameters parameters)
     {
         var tenantIds = await dbContext.TenantMembers

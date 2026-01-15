@@ -10,6 +10,16 @@ public static class ProjectParametersMappings
         };
     }
     
+    public static Project.Contracts.Parameters.Project.GetProjectBySlugParameters ToCoreParameters(this Contracts.Parameters.Project.GetProjectBySlugParameters parameters)
+    {
+        return new Project.Contracts.Parameters.Project.GetProjectBySlugParameters
+        {
+            TenantId = parameters.TenantId,
+            MemberId = parameters.MemberId,
+            Slug = parameters.Slug
+        };
+    }
+    
     public static Project.Contracts.Parameters.Project.GetProjectByIdParameters ToCoreParameters(this Contracts.Parameters.Project.GetProjectByIdParameters parameters)
     {
         return new Project.Contracts.Parameters.Project.GetProjectByIdParameters

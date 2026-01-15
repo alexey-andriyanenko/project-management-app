@@ -8,6 +8,21 @@ namespace Facade.ProjectManagement.Controllers;
 [Route("api/v1/tenants/{tenantId}/projects")]
 public class ProjectManagementController(IProjectManagementService projectManagementService)
 {
+    [HttpGet("by-slug")]
+    public async Task<Contracts.Dtos.ProjectDto> GetBySlugAsync(
+        [FromRoute] Guid tenantId,
+        [FromQuery] string slug
+    )
+    {
+        var parameters = new Contracts.Parameters.Project.GetProjectBySlugParameters
+        {
+            MemberId = Guid.Empty, // To be replaced with actual member ID from context
+            TenantId = tenantId,
+            Slug = slug
+        };
+        return await projectManagementService.GetAsync(parameters);
+    }
+    
     [HttpGet]
     public async Task<GetManyProjectsByTenantIdResult> GetManyAsync([FromRoute] Guid tenantId)
     {

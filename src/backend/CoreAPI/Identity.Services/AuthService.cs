@@ -49,7 +49,6 @@ public class AuthService(IdentityDbContext dbContext, IConfiguration configurati
     public async Task<LoginResult> LoginAsync(LoginParameters parameters)
     {
         var user = await dbContext.Users
-            .Include(x => x.PasswordHash)
             .FirstOrDefaultAsync(x => x.Email == parameters.Email);
 
         if (user == null)

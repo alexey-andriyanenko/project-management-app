@@ -1,4 +1,5 @@
-﻿using Facade.IdentityManagement.Contracts.Dtos;
+﻿using System.Security.Claims;
+using Facade.IdentityManagement.Contracts.Dtos;
 using Facade.IdentityManagement.Contracts.Parameters.User;
 using Facade.IdentityManagement.Contracts.Results;
 using Facade.IdentityManagement.Contracts.Services;
@@ -8,14 +9,14 @@ namespace Facade.IdentityManagement.Controllers;
 
 [ApiController]
 [Route("api/v1/users")]
-public class UserManagementController(IUserManagementService userManagementService)
+public class UserManagementController(IUserManagementService userManagementService) : ControllerBase
 {
-    [HttpGet("{userId}")]
-    public async Task<UserDto> GetAsync([FromRoute] Guid userId)
+    [HttpGet("me")]
+    public async Task<ActionResult<UserDto>> GetAsync()
     {
         var parameters = new Contracts.Parameters.User.GetUserByIdParameters
         {
-            Id = userId
+            Id = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!)
         };
         return await userManagementService.GetAsync(parameters);
     }

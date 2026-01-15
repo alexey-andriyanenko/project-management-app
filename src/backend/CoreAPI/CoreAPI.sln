@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tag", "Tag", "{B4797A1E-7AA
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Facade.BoardManagement", "Facade.BoardManagement", "{9D0FFBBD-1579-433C-ACDF-083B478A1DAE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectManagement", "ProjectManagement", "{75FC6FDC-931C-44FE-939D-2B1D03037DFF}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Facade.ProjectManagement", "Facade.ProjectManagement", "{75FC6FDC-931C-44FE-939D-2B1D03037DFF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Facade.TenantManagement", "Facade.TenantManagement", "{C592466B-4AAB-40AB-ADF9-EBF1D98ED6F6}"
 EndProject

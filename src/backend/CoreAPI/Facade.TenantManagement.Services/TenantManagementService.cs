@@ -8,6 +8,12 @@ namespace Facade.TenantManagement.Services;
 
 public class TenantManagementService(Tenant.Client.Contracts.ITenantClient tenantClient) : ITenantManagementService
 {
+    public async Task<TenantDto> GetAsync(GetTenantBySlugParameters parameters)
+    {
+        var result = await tenantClient.TenantResource.GetAsync(parameters.ToCoreParameters());
+        return result.ToFacadeDto();
+    }
+
     public async Task<GetManyTenantsByUserIdResult> GetManyAsync(GetManyTenantsByUserIdParameters parameters)
     {
         var result = await tenantClient.TenantResource.GetManyAsync(parameters.ToCoreParameters());

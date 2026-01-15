@@ -1,14 +1,24 @@
 ﻿using Facade.TenantManagement.Contracts.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Facade.TenantManagement.Controllers;
 
 [ApiController]
 [Route("api/v1/tenants")]
-public class TenantManagementController(ITenantManagementService tenantManagementService)
+public class TenantManagementController(ITenantManagementService tenantManagementService) : ControllerBase
 {
+    [HttpGet("by-slug")]
+    public async Task<Contracts.Dtos.TenantDto> GetAsync(
+        [FromQuery] Contracts.Parameters.GetTenantBySlugParameters parameters)
+    {
+        // parameters.MemberId = httpContextAccessor.HttpContext.User
+        return await tenantManagementService.GetAsync(parameters);
+    }
+    
     [HttpGet]
-    public async Task<Contracts.Results.GetManyTenantsByUserIdResult> GetManyByUserIdAsync(
+    public async Task<ActionResult<Contracts.Results.GetManyTenantsByUserIdResult>> GetManyByUserIdAsync(
         [FromQuery] Contracts.Parameters.GetManyTenantsByUserIdParameters parameters)
     {
         return await tenantManagementService.GetManyAsync(parameters);

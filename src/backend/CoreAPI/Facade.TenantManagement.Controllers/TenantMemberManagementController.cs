@@ -5,7 +5,7 @@ namespace Facade.TenantManagement.Controllers;
 
 [ApiController]
 [Route("api/v1/tenants/{tenantId}/members")]
-public class TenantMemberManagementController(ITenantMemberManagementService tenantMemberManagementService)
+public class TenantMemberManagementController(ITenantMemberManagementService tenantMemberManagementService) : ControllerBase
 {
     [HttpGet]
     public async Task<Contracts.Results.GetManyTenantMembersByTenantIdResult> GetManyAsync(

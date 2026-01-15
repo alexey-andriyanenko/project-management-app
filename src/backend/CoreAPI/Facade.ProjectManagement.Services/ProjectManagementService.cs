@@ -19,6 +19,19 @@ public class ProjectManagementService(Project.Client.Contracts.IProjectClient pr
         };
     }
     
+    public async Task<ProjectDto> GetAsync(GetProjectBySlugParameters parameters)
+    {
+        try
+        {
+            var project = await projectClient.ProjectResource.GetAsync(parameters.ToCoreParameters());
+            return project.ToFacadeDto();
+        }
+        catch(Project.Contracts.Exceptions.ProjectNotFoundException)
+        {
+            throw new Facade.ProjectManagement.Contracts.Exceptions.ProjectNotFoundException(parameters.Slug);
+        }
+    }
+    
     public async Task<ProjectDto> GetAsync(GetProjectByIdParameters parameters)
     {
         try

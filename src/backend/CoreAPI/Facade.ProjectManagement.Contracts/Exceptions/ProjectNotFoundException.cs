@@ -1,6 +1,11 @@
 ﻿namespace Facade.ProjectManagement.Contracts.Exceptions;
 
-public class ProjectNotFoundException(Guid projectId) : Exception($"Project with ID '{projectId}' was not found.")
+public class ProjectNotFoundException : Exception
 {
+    public ProjectNotFoundException(Guid projectId) : base($"Project with ID '{projectId}' was not found.")
+    {
+    }
     
+    public ProjectNotFoundException(string slug) : base($"Project with Slug '{slug}' was not found.")
+    {}
 }
