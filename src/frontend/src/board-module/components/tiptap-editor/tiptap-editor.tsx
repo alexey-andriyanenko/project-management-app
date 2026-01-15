@@ -24,7 +24,6 @@ export const TipTapEditor: React.FC<TipTapEditorProps> = ({ value, onChange, cla
     ],
     content: value,
     onUpdate: ({ editor }) => {
-      console.log("Editor content updated:", editor.getJSON());
       onChange(editor.getJSON());
     },
   });

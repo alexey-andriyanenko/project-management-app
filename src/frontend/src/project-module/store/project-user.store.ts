@@ -1,5 +1,4 @@
 ﻿import {
-  type AddManyUsersToProjectRequest,
   type AddUserToProjectRequest,
   type GetManyProjectUsersByIdsRequest,
   type GetManyProjectUsersRequest,
@@ -61,14 +60,6 @@ class ProjectUserStore {
 
     runInAction(() => {
       this._users.push(response);
-    });
-  }
-
-  public async addManyUsersToProject(data: AddManyUsersToProjectRequest) {
-    const response = await projectUserApiService.addManyUsersToProject(data);
-
-    runInAction(() => {
-      this._users.push(...response.users);
     });
   }
 

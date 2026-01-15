@@ -7,14 +7,15 @@ import { TipTapEditor } from "../tiptap-editor";
 import { TipTapEditorContent } from "../tiptap-editor-content";
 
 import "./comment-editor.css";
+import type {JSONContent} from "@tiptap/react";
 
 type CommentEditorProps = {
   createdAt?: string;
   updatedAt?: string;
-  value: string;
-  onChange?: (value: string) => void;
+  value: JSONContent;
+  onChange: (value: JSONContent) => void;
   readonly?: boolean;
-  onSubmit?: (value: string) => void;
+  onSubmit?: (value: JSONContent) => void;
   onDelete?: () => void;
 };
 
@@ -39,7 +40,7 @@ export const CommentEditor: React.FC<CommentEditorProps> = ({
   return (
     <Stack width="100%" gap={2} className={clsx("comment-editor", { ["editable"]: editable })}>
       {editable ? (
-        <TipTapEditor value={value} onChange={onChange!} className="comment-editor-content" />
+        <TipTapEditor value={value} onChange={onChange} className="comment-editor-content" />
       ) : (
         <TipTapEditorContent content={value} className="comment-editor-content" />
       )}
