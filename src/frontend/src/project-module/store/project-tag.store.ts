@@ -1,3 +1,3 @@
-﻿import { TagStore } from "src/tags-module/store";
+﻿import { TagStore } from "./tag.store";
 
 export const projectTagStore = new TagStore();

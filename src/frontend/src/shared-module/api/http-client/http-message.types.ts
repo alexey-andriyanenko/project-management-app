@@ -4,4 +4,4 @@ export type ExtractParam<Path, NextPart> = Path extends `:${infer Param}`
 
 export type ExtractParams<Path> = Path extends `${infer Segment}/${infer Rest}`
   ? ExtractParam<Segment, ExtractParams<Rest>>
-  : ExtractParam<Path, {}>;
+  : ExtractParam<Path, object>;

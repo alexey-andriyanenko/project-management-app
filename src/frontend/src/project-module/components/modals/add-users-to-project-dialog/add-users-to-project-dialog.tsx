@@ -90,7 +90,7 @@ export const AddUsersToProjectDialog: React.FC<AddUsersToProjectDialogProps> = (
         );
         setLoading(false);
       });
-  }, []);
+  }, [organization.id]);
 
   React.useEffect(() => {
     console.log("watchedUsers", watchedUsers);

@@ -36,7 +36,7 @@ const Boards: React.FC = observer(() => {
         console.error("Failed to fetch boards:", error);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [boardStore, organizationStore.currentOrganization, projectStore.currentProject]);
 
   const handleCreate = () => {
     boardModalsStore.open("CreateOrEditBoardDialog", {
@@ -80,7 +80,7 @@ const Boards: React.FC = observer(() => {
     sharedModalsStore.open("ConfirmModal", {
       title: "Are you sure you want to delete this board?",
       description: `This action cannot be undone. All tasks are going to be deleted as well. Board: ${board.name}`,
-      onConfirm: boardStore.deleteBoard({
+      onConfirm: () => boardStore.deleteBoard({
         organizationId: organizationStore.currentOrganization!.id,
         projectId: projectStore.currentProject!.id,
         boardId: board.id,

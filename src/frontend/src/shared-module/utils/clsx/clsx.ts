@@ -7,8 +7,8 @@ export const clsx: Clsx = (...params) => {
         return param;
       } else if (param && typeof param === "object") {
         return Object.entries(param)
-          .filter(([_, value]) => Boolean(value))
-          .map(([key, _]) => key)
+          .filter(([, value]) => Boolean(value))
+          .map(([key]) => key)
           .join(" ");
       }
       return "";

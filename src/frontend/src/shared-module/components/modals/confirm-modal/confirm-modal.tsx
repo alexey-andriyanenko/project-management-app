@@ -7,7 +7,7 @@ import type { ModalsPropsBase } from "src/modals-module";
 export interface IConfirmModalProps extends ModalsPropsBase {
   title: string;
   description?: string;
-  onConfirm: () => void | Promise<unknown>;
+  onConfirm: VoidFunction | (() => Promise<void>);
 }
 
 export const ConfirmModal: React.FC<IConfirmModalProps> = ({

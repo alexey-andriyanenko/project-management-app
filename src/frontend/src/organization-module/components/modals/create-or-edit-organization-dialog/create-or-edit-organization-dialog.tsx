@@ -29,6 +29,7 @@ export const CreateOrEditOrganizationDialog: React.FC<CreateOrEditOrganizationDi
       name: organization?.name || "",
     },
   });
+  // eslint-disable-next-line react-hooks/incompatible-library
   const currentName = watch("name");
 
   const onSubmit = handleSubmit(async (data) => {

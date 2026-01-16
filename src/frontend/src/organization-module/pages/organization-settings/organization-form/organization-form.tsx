@@ -22,7 +22,7 @@ export const OrganizationForm: React.FC = observer(() => {
   const onSubmit = handleSubmit(async (data: OrganizationFormValues) => {
     await organizationStore.updateOrganization({
       id: organizationStore.currentOrganization!.id,
-      organizationName: data.name,
+      name: data.name,
     });
 
     reset(data);

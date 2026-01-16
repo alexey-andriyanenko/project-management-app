@@ -94,7 +94,7 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = observer(
           );
           setLoadingUsers(false);
         });
-    }, []);
+    }, [authStore.currentUser, organization.id]);
 
     React.useEffect(() => {
       console.log("watchedUsers", watchedUsers);

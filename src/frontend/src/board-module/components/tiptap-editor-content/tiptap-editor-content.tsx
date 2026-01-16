@@ -1,11 +1,11 @@
 ﻿import React from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
+import {useEditor, EditorContent, type JSONContent} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 
 import "./tiptap-editor-content.css";
 
 type TipTapEditorContentProps = {
-  content: string;
+  content: JSONContent;
   editable?: boolean;
   className?: string;
 };

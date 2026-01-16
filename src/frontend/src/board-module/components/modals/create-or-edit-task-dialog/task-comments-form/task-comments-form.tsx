@@ -30,11 +30,11 @@ export const TaskCommentsForm: React.FC = () => {
               />
             )}
           />
-          <Field.ErrorText>{formState.errors.comments?.[index]?.content?.message}</Field.ErrorText>
+          <Field.ErrorText>{formState.errors.comments?.[index]?.message}</Field.ErrorText>
         </Field.Root>
       ))}
 
-      <Button variant="ghost" onClick={() => append({ content: "" })} size="sm">
+      <Button variant="ghost" onClick={() => append({ content: {} })} size="sm">
         + Add Comment
       </Button>
     </Stack>

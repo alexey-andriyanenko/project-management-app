@@ -1,4 +1,6 @@
-﻿export type TaskFormValues = {
+﻿import type {JSONContent} from "@tiptap/react";
+
+export type TaskFormValues = {
   title: string;
   description: JSON;
   tagIds: string[];
@@ -13,7 +15,7 @@
 export type CommentFormItem = {
   id?: string;
   createdByUserId?: string;
-  content: string;
+  content: JSONContent;
   createdAt?: string;
   updatedAt?: string;
 };

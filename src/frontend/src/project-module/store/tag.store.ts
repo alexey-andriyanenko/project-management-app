@@ -3,7 +3,7 @@ import { type GetTagsByProjectIdRequest, tagApiService } from "../api/tag.api.ts
 import type { TagModel } from "../models/tag.ts";
 import type { CreateTagRequest, UpdateTagRequest } from "../api/tag.types.ts";
 
-class TagStore {
+export class TagStore {
   private _tags: TagModel[] = [];
 
   constructor() {

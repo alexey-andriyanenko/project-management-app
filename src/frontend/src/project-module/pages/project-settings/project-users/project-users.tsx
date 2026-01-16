@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 
 import { Flex, Button } from "@chakra-ui/react";
 
-import { useModalsStore, useProjectStore, useProjectUserStore } from "src/project-module/store";
+import { useProjectStore, useProjectUserStore } from "src/project-module/store";
 import { useModalsStore as useSharedModalsStore } from "src/shared-module/store/modals";
 import type { ProjectUserModel } from "src/project-module/models";
 import { UsersList } from "./users-list";
@@ -13,7 +13,7 @@ export const ProjectUsers: React.FC = observer(() => {
   const organizationStore = useOrganizationStore();
   const projectStore = useProjectStore();
   const projectUserStore = useProjectUserStore();
-  const modalsStore = useModalsStore();
+  // const modalsStore = useModalsStore();
   const sharedModalsStore = useSharedModalsStore();
 
   React.useEffect(() => {
@@ -27,21 +27,21 @@ export const ProjectUsers: React.FC = observer(() => {
         console.error("Failed to fetch projects:", error);
         setLoading(false);
       });
-  }, []);
+  }, [organizationStore.currentOrganization, projectStore.currentProject, projectUserStore]);
 
   const [loading, setLoading] = React.useState(true);
 
   const handleAssign = async () => {
-    modalsStore.open("AddUsersToProjectDialog", {
-      organization: organizationStore.currentOrganization!,
-      addedUsers: projectUserStore.users,
-      onAssign: (data) =>
-        projectUserStore.addManyUsersToProject({
-          organizationId: organizationStore.currentOrganization!.id,
-          projectId: projectStore.currentProject!.id,
-          users: data,
-        }),
-    });
+    // modalsStore.open("AddUsersToProjectDialog", {
+    //   organization: organizationStore.currentOrganization!,
+    //   addedUsers: projectUserStore.users,
+    //   onAssign: (data) =>
+    //     projectUserStore.addManyUsersToProject({
+    //       organizationId: organizationStore.currentOrganization!.id,
+    //       projectId: projectStore.currentProject!.id,
+    //       users: data,
+    //     }),
+    // });
   };
 
   const handleUnassign = (user: ProjectUserModel) => {
