@@ -33,6 +33,20 @@ jobs:
 
       - name: Set up Docker buildx
         uses: docker/setup-buildx-action@v2
+  
+      # yaml
+      - name: Debug and build
+        working-directory: src/backend/CoreAPI
+        run: |
+          set -x
+          pwd
+          ls -la
+          echo "ECR_URI='${{ env.ECR_URI }}'"
+          echo "IMAGE_TAG='${{ env.IMAGE_TAG }}'"
+          echo "GITHUB_SHA='${{ github.sha }}'"
+          echo "Expanded docker command:"
+          echo docker build -t "${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}" -t "${{ env.ECR_URI }}:${{ github.sha }}" .
+          docker build -t "${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}" -t "${{ env.ECR_URI }}:${{ github.sha }}" .
 
       - name: Build Docker image
         working-directory: src/backend/CoreAPI
