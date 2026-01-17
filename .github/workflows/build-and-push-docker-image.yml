@@ -35,11 +35,11 @@ jobs:
         working-directory: src/backend/CoreAPI
         run: |
           docker build \
-            -t ECR_URI:$IMAGE_TAG \
-            -t ECR_URI:${{ github.sha }} \
+            -t $ECR_URI:$IMAGE_TAG \
+            -t $ECR_URI:${{ github.sha }} \
             .
 
       - name: Push Docker image
         run: |
-          docker push ECR_URI:$IMAGE_TAG
-          docker push ECR_URI:${{ github.sha }}
+          docker push $ECR_URI:$IMAGE_TAG
+          docker push $ECR_URI:${{ github.sha }}
