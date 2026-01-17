@@ -8,7 +8,7 @@ namespace Facade.IdentityManagement.Controllers;
 [AllowAnonymous]
 [ApiController]
 [Route("api/v1/auth")]
-public class AuthManagementController(IAuthManagementService authManagementService)
+public class AuthManagementController(IAuthManagementService authManagementService) : ControllerBase
 {
     [HttpPost("login")]
     public async Task<LoginResult> LoginAsync([FromBody] Contracts.Parameters.Auth.LoginParameters parameters)
