@@ -47,6 +47,18 @@ jobs:
           echo "Expanded docker command:"
           echo docker build -t "${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}" -t "${{ env.ECR_URI }}:${{ github.sha }}" .
           docker build -t "${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}" -t "${{ env.ECR_URI }}:${{ github.sha }}" .
+          
+      - name: Debug and build (trim ECR_URI)
+        working-directory: src/backend/CoreAPI
+        run: |
+          set -x
+          pwd
+          ls -la
+          echo "RAW ECR_URI='${{ secrets.ECR_URI }}'"
+          ecr_uri="$(printf '%s' "${{ secrets.ECR_URI }}" | tr -d '\r\n')"
+          echo "TRIMMED ECR_URI='${ecr_uri}'"
+          docker build -t "${ecr_uri}:${{ env.IMAGE_TAG }}" -t "${ecr_uri}:${{ github.sha }}" .
+      
 
       - name: Build Docker image
         working-directory: src/backend/CoreAPI
