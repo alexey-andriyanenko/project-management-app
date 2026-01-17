@@ -32,17 +32,9 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Docker image
+        working-directory: src/backend/CoreAPI
         run: |
-          docker buildx build \
-            --tag $ECR_URI:$IMAGE_TAG \
-            --tag $ECR_URI:${GITHUB_SHA} \
-            src/backend/CoreAPI \
-            --load
-        env:
-          ECR_URI: ${{ env.ECR_URI }}
-          IMAGE_TAG: ${{ env.IMAGE_TAG }}
-          GITHUB_SHA: ${{ github.sha }}
-
+          docker build . -t $ECR_URI:$IMAGE_TAG -t $ECR_URI:${{ github.sha }}
 
       - name: Push Docker image
         run: |
