@@ -34,7 +34,7 @@ jobs:
       - name: Build Docker image
         working-directory: src/backend/CoreAPI
         run: |
-          docker build . -t $ECR_URI:$IMAGE_TAG -t $ECR_URI:${{ github.sha }}
+          docker build . -t ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }} -t ${{ env.ECR_URI }}:${{ github.sha }}
 
       - name: Push Docker image
         run: |
