@@ -5,6 +5,10 @@ on:
     branches:
       - production
 
+permissions:
+  id-token: write
+  contents: read
+
 env:
   AWS_REGION: eu-north-1
   ECR_URI: ${{ secrets.ECR_URI }}
