@@ -10,9 +10,15 @@ permissions:
   contents: read
 
 env:
-  AWS_REGION: eu-north-1
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_GITHUB_OIDC_ROLE_ARN: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
+  EC2_HOST: ${{ secrets.EC2_HOST }}
+  EC2_USER: ${{ secrets.EC2_USER }}
+  EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
   ECR_URI: ${{ secrets.ECR_URI }}
   IMAGE_TAG: latest
+  DOCKER_CONTAINER: ${{ secrets.DOCKER_CONTAINER }}
+  ASPNETCORE_PORT: ${{ secrets.APP_PORT }}
 
 jobs:
   build-and-push:
@@ -25,7 +31,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
+          role-to-assume: ${{ env.AWS_GITHUB_OIDC_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -40,3 +46,18 @@ jobs:
         run: |
           docker push ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}
           docker push ${{ env.ECR_URI }}:${{ github.sha }}
+      
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+           host: ${{ env.EC2_HOST }}
+           username: ${{ env.EC2_USER }}
+           key: ${{ env.EC2_SSH_KEY }}
+           script: |
+             aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URI
+             docker pull ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}
+             docker stop ${{ env.DOCKER_CONTAINER }} || true
+             docker rm ${{ env.DOCKER_CONTAINER }} || true
+             docker run -d --name ${{ env.DOCKER_CONTAINER }} -p 80:${{ env.ASPNETCORE_PORT }} -e ASPNETCORE_URLS="http://+:5130" -e ASPNETCORE_ENVIRONMENT=Development ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}
+             docker image prune -f
+             
