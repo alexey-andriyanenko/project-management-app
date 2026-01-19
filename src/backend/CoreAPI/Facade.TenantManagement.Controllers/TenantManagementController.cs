@@ -17,18 +17,6 @@ public class TenantManagementController(ITenantManagementService tenantManagemen
         return await tenantManagementService.GetAsync(parameters);
     }
     
-    [HttpGet("{tenantId}")]
-    public async Task<Contracts.Dtos.TenantDto> GetByIdAsync(
-        [FromRoute] Guid tenantId)
-    {
-        return await Task.FromResult(new Contracts.Dtos.TenantDto
-        {
-            Id = tenantId,
-            Name = "Demo Tenant",
-            Slug = "demo-tenant",
-        });
-    }
-    
     [HttpGet]
     public async Task<ActionResult<Contracts.Results.GetManyTenantsByUserIdResult>> GetManyByUserIdAsync(
         [FromQuery] Contracts.Parameters.GetManyTenantsByUserIdParameters parameters)

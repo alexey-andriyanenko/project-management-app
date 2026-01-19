@@ -18,7 +18,7 @@ env:
   ECR_URI: ${{ secrets.ECR_URI }}
   IMAGE_TAG: latest
   DOCKER_CONTAINER: ${{ secrets.DOCKER_CONTAINER }}
-  ASPNETCORE_PORT: ${{ secrets.APP_PORT }}
+  ASPNETCORE_PORT: ${{ secrets.ASPNETCORE_PORT }}
 
 jobs:
   build-and-push:
