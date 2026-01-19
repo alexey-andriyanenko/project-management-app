@@ -2,7 +2,7 @@ import { HttpClient } from "src/shared-module/api/http-client/http-client";
 import { authStore } from "src/auth-module/store/auth.store.ts";
 
 export const appHttpClient = new HttpClient({
-  baseUrl: import.meta.env.VITE_APP_TITLE,
+  baseUrl: import.meta.env.VITE_API_URL,
   interceptors: [
     async (request: XMLHttpRequest) => {
       if (request.status === 401 && window.location.pathname !== "/auth/login") {
