@@ -5,6 +5,7 @@ using Facade.ProjectManagement.DI;
 using Facade.TagManagement.DI;
 using Facade.TenantManagement.DI;
 using Infrastructure.EventBus.InMemory.DI;
+using Infrastructure.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -12,6 +13,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
+var region = Environment.GetEnvironmentVariable("AWS_REGION") ?? throw new ArgumentNullException("AWS_REGION environment variable is not set");
+var secretName = Environment.GetEnvironmentVariable("AWS_SECRETS_MANAGER_SECRET_NAME") ?? throw new ArgumentNullException("AWS_SECRETS_MANAGER_SECRET_NAME environment variable is not set");
+
+builder.Configuration.AddAmazonSecretsManager(region, secretName);
+
 var configuration = builder.Configuration;
 
 builder.Services.AddOpenApi();

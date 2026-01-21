@@ -12,6 +12,7 @@ permissions:
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_GITHUB_OIDC_ROLE_ARN: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
+  AWS_SECRETS_MANAGER_SECRET_NAME: ${{ secrets.AWS_SECRETS_MANAGER_SECRET_NAME }}
   EC2_HOST: ${{ secrets.EC2_HOST }}
   EC2_USER: ${{ secrets.EC2_USER }}
   EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
@@ -60,11 +61,46 @@ jobs:
             docker pull ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}
             docker stop ${{ env.DOCKER_CONTAINER }} || true
             docker rm ${{ env.DOCKER_CONTAINER }} || true
-            docker run -d --name ${{ env.DOCKER_CONTAINER }} -p 80:${{ env.ASPNETCORE_PORT }} -e ASPNETCORE_URLS="http://+:${{ env.ASPNETCORE_PORT }}" -e ASPNETCORE_ENVIRONMENT=Development ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}
+            docker run -d --name ${{ env.DOCKER_CONTAINER }} \
+            -p 80:${{ env.ASPNETCORE_PORT }} \
+            -e ASPNETCORE_URLS="http://+:${{ env.ASPNETCORE_PORT }}" \
+            -e ASPNETCORE_ENVIRONMENT=Development \
+            -e AWS_REGION=${{ env.AWS_REGION }} \
+            -e AWS_SECRETS_MANAGER_SECRET_NAME=${{ env.AWS_SECRETS_MANAGER_SECRET_NAME }} \
+            ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}
             docker image prune -f
+
+  migrations:
+    runs-on: ubuntu-latest
+    needs: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_GITHUB_OIDC_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install EF Core tools
+        run: dotnet tool install --global dotnet-ef
+
+      - name: Apply Database Migrations
+        run: bash scripts/apply_all_migrations.sh
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+          AWS_SECRETS_MANAGER_SECRET_NAME: ${{ env.AWS_SECRETS_MANAGER_SECRET_NAME }}
 
   frontend:
     runs-on: ubuntu-latest
+    needs: backend
 
     steps:
       - name: Checkout

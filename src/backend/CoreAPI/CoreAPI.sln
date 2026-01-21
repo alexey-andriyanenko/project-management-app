@@ -148,6 +148,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tag.Events.Contracts", "Tag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tag.Events", "Tag.Events\Tag.Events.csproj", "{589F7440-1CA3-44D8-B894-640B4E954BAD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure.Extensions.Configuration", "Infrastructure.Extensions.Configuration\Infrastructure.Extensions.Configuration.csproj", "{00315F30-C702-48F1-9CE0-C9B41A6E44EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -402,6 +404,10 @@ Global
 		{589F7440-1CA3-44D8-B894-640B4E954BAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{589F7440-1CA3-44D8-B894-640B4E954BAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{589F7440-1CA3-44D8-B894-640B4E954BAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{00315F30-C702-48F1-9CE0-C9B41A6E44EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{00315F30-C702-48F1-9CE0-C9B41A6E44EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{00315F30-C702-48F1-9CE0-C9B41A6E44EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{00315F30-C702-48F1-9CE0-C9B41A6E44EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CFABFFA0-AD4E-4A02-A2AE-7DEBD59DD297} = {DB2A1642-23C8-4373-A944-B46E71ABBACE}
@@ -465,5 +471,6 @@ Global
 		{3F25386E-D916-4ABD-9F36-9B5905F043E3} = {DB2A1642-23C8-4373-A944-B46E71ABBACE}
 		{DFB81FB0-FBED-48D2-B9C3-78649D8B9597} = {B4797A1E-7AA2-4A0E-9882-3E34A9F926D9}
 		{589F7440-1CA3-44D8-B894-640B4E954BAD} = {B4797A1E-7AA2-4A0E-9882-3E34A9F926D9}
+		{00315F30-C702-48F1-9CE0-C9B41A6E44EF} = {8D8B0006-AF28-4583-A4F6-E9EDCBE52055}
 	EndGlobalSection
 EndGlobal
