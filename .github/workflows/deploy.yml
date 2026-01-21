@@ -92,9 +92,8 @@ jobs:
       - name: Install EF Core tools
         run: dotnet tool install --global dotnet-ef
         
-      - name: Restore dependencies
-        working-directory: src/backend/CoreAPI
-        run: dotnet restore
+      - name: Restore .NET tools
+        run: dotnet tool restore
 
       - name: Apply Database Migrations
         run: bash scripts/apply_all_migrations.sh
