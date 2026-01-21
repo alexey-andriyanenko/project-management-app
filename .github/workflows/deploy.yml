@@ -89,6 +89,10 @@ jobs:
           role-to-assume: ${{ env.AWS_GITHUB_OIDC_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Install dependencies
+        working-directory: src/backend/CoreAPI
+        run: dotnet restore
+
       - name: Restore .NET tools
         working-directory: src/backend/CoreAPI
         run: dotnet tool restore
