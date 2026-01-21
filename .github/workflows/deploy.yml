@@ -90,6 +90,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Restore .NET dependencies
+        working-directory: src/backend/CoreAPI
         run: dotnet restore
 
       - name: Apply Database Migrations
