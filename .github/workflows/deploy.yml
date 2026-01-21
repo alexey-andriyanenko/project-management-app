@@ -72,7 +72,7 @@ jobs:
 
   migrations:
     runs-on: ubuntu-latest
-    needs: backend
+#    needs: backend
 
     steps:
       - name: Checkout
