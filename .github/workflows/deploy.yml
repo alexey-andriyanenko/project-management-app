@@ -126,7 +126,7 @@ jobs:
       - name: Create frontend env file
         working-directory: src/frontend
         run: |
-          echo "VITE_API_URL=${{ env.VITE_API_URL }}" > .env.production
+          echo "VITE_API_URL=https://api.oleksii-andriianenko-agile-app.com/api/v1" > .env.production
 
       - name: Build react app
         working-directory: src/frontend
