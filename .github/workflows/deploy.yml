@@ -89,9 +89,9 @@ jobs:
           role-to-assume: ${{ env.AWS_GITHUB_OIDC_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Restore .NET dependencies
+      - name: Restore .NET tools
         working-directory: src/backend/CoreAPI
-        run: dotnet restore
+        run: dotnet tool restore
 
       - name: Apply Database Migrations
         run: bash scripts/apply_all_migrations.sh
