@@ -13,10 +13,14 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
-var region = Environment.GetEnvironmentVariable("AWS_REGION") ?? throw new ArgumentNullException("AWS_REGION environment variable is not set");
-var secretName = Environment.GetEnvironmentVariable("AWS_SECRETS_MANAGER_SECRET_NAME") ?? throw new ArgumentNullException("AWS_SECRETS_MANAGER_SECRET_NAME environment variable is not set");
 
-builder.Configuration.AddAmazonSecretsManager(region, secretName);
+if (builder.Environment.IsProduction())
+{
+    var region = Environment.GetEnvironmentVariable("AWS_REGION") ?? throw new ArgumentNullException("AWS_REGION environment variable is not set");
+    var secretName = Environment.GetEnvironmentVariable("AWS_SECRETS_MANAGER_SECRET_NAME") ?? throw new ArgumentNullException("AWS_SECRETS_MANAGER_SECRET_NAME environment variable is not set");
+
+    builder.Configuration.AddAmazonSecretsManager(region, secretName);
+}
 
 var configuration = builder.Configuration;
 
@@ -119,8 +123,6 @@ builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
     app.MapOpenApi();
 
     app.UseSwagger();
@@ -129,7 +131,6 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Facade.API v1");
         c.RoutePrefix = string.Empty;
     });
-}
 
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
