@@ -38,8 +38,6 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Index />} />
 
-            test change
-
           {renderRoutes(authModule)}
           {renderRoutes(organizationModule)}
           {renderRoutes(projectModule)}
