@@ -20,7 +20,7 @@ export const ProjectTags: React.FC = observer(() => {
     setLoading(true);
     tagStore
       .fetchTagsByProjectId({
-        organizationId: organizationStore.currentOrganization!.id,
+        tenantId: organizationStore.currentOrganization!.id,
         projectId: projectStore.currentProject!.id,
       })
       .then(() => setLoading(false))
@@ -34,7 +34,7 @@ export const ProjectTags: React.FC = observer(() => {
     modalsStore.open("CreateOrEditTagDialog", {
       onCreate: (data) =>
         tagStore.createTag({
-          organizationId: organizationStore.currentOrganization!.id,
+          tenantId: organizationStore.currentOrganization!.id,
           projectId: projectStore.currentProject!.id,
           name: data.name,
           color: data.color,
@@ -50,7 +50,7 @@ export const ProjectTags: React.FC = observer(() => {
       tag,
       onEdit: (data) =>
         tagStore.updateTag({
-          organizationId: organizationStore.currentOrganization!.id,
+          tenantId: organizationStore.currentOrganization!.id,
           projectId: projectStore.currentProject!.id,
           tagId: tag.id,
           name: data.name,

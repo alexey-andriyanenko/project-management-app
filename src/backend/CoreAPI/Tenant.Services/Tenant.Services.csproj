@@ -7,9 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Infrastructure.EventBus.Contracts\Infrastructure.EventBus.Contracts.csproj" />
       <ProjectReference Include="..\Shared.String.Extensions\Shared.String.Extensions.csproj" />
       <ProjectReference Include="..\Tenant.Contracts\Tenant.Contracts.csproj" />
       <ProjectReference Include="..\Tenant.DataAccess\Tenant.DataAccess.csproj" />
+      <ProjectReference Include="..\Tenant.Events.Contracts\Tenant.Events.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

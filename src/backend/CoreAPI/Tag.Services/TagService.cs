@@ -14,7 +14,9 @@ public class TagService(TagDbContext dbContext) : ITagService
 {
     public async Task<GetManyTagsByTenantIdResult> GetManyAsync(GetManyTagsByTenantIdParameters parameters)
     {
-        var tagsQuery = dbContext.Tags.AsQueryable();
+        var tagsQuery = dbContext.Tags
+            .AsNoTracking()
+            .AsQueryable();
 
         if (parameters.ProjectId.HasValue)
         {
@@ -36,6 +38,7 @@ public class TagService(TagDbContext dbContext) : ITagService
     public async Task<GetManyTagsByIdsResult> GetManyAsync(GetManyTagsByIdsParameters parameters)
     {
         var tags = await dbContext.Tags
+            .AsNoTracking()
             .Where(t => t.TenantId == parameters.TenantId && parameters.TagIds.Contains(t.Id))
             .ToListAsync();
 
@@ -49,6 +52,7 @@ public class TagService(TagDbContext dbContext) : ITagService
     {
         var newTag = new DataAccess.Entities.TagEntity()
         {
+            Id = Guid.NewGuid(),
             TenantId = parameters.TenantId,
             ProjectId = parameters.ProjectId,
             Name = parameters.Name,
@@ -81,7 +85,18 @@ public class TagService(TagDbContext dbContext) : ITagService
 
     public async Task DeleteAsync(DeleteTagParameters parameters)
     {
-        var tag = await dbContext.Tags.FindAsync(parameters.Id, parameters.TenantId);
+        var tagQuery = dbContext.Tags.AsQueryable().AsNoTracking();
+        
+        if (parameters.ProjectId.HasValue) 
+        {
+            tagQuery = tagQuery.Where(t => t.TenantId == parameters.TenantId && t.ProjectId == parameters.ProjectId);
+        }
+        else
+        {
+            tagQuery = tagQuery.Where(t => t.TenantId == parameters.TenantId && t.ProjectId == null);
+        }
+        
+        var tag = await tagQuery.FirstOrDefaultAsync(t => t.Id == parameters.Id);
 
         if (tag == null)
         {

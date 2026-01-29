@@ -15,3 +15,7 @@ export type UpdateOrganizationRequest = CreateOrganizationRequest & {
 };
 
 export type UpdateOrganizationResponse = OrganizationModel;
+
+export type DeleteOrganizationRequest = {
+  id: string;
+};

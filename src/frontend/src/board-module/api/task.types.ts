@@ -21,13 +21,13 @@ export type TaskBoardColumnResponseModel = {
 };
 
 export type TaskUserResponseModel = {
-  id: string;
+  userId: string;
   fullName: string;
   email: string;
 };
 
 export type TaskTagResponseModel = {
-  id: string;
+  tagId: string;
   name: string;
   color: string;
 };
@@ -35,7 +35,7 @@ export type TaskTagResponseModel = {
 export type GetTaskByIdRequest = {
   taskId: string;
   projectId: string;
-  organizationId: string;
+  tenantId: string;
 };
 
 export type GetTaskByIdResponse = TaskModel;
@@ -43,7 +43,7 @@ export type GetTaskByIdResponse = TaskModel;
 export type GetTasksByBoardIdRequest = {
   boardId: string;
   projectId: string;
-  organizationId: string;
+  tenantId: string;
   search?: string;
 };
 
@@ -52,11 +52,12 @@ export type GetTasksByBoardIdResponse = {
 };
 
 export type CreateTaskRequest = {
-  organizationId: string;
+  tenantId: string;
   projectId: string;
   boardId: string;
   title: string;
-  description: string;
+  descriptionAsJson: string;
+  descriptionAsPlainText: string;
   boardColumnId: string;
   assigneeUserId?: string;
   tagIds: string[];
@@ -66,11 +67,12 @@ export type CreateTaskResponse = TaskModel;
 
 export type UpdateTaskRequest = {
   taskId: string;
-  organizationId: string;
+  tenantId: string;
   projectId: string;
   boardId: string;
   title: string;
-  description: string;
+  descriptionAsJson: string;
+  descriptionAsPlainText: string;
   boardColumnId?: string;
   assigneeUserId?: string | null;
   tagIds: string[];
@@ -80,7 +82,7 @@ export type UpdateTaskResponse = TaskModel;
 
 export type DeleteTaskRequest = {
   taskId: string;
-  organizationId: string;
+  tenantId: string;
   projectId: string;
   boardId: string;
 };

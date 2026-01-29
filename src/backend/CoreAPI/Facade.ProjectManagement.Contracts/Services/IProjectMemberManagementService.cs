@@ -12,6 +12,8 @@ public interface IProjectMemberManagementService
     
     public Task<ProjectMemberDto> CreateAsync(CreateProjectMemberParameters parameters);
     
+    public Task<CreateManyProjectMembersResult> CreateManyAsync(CreateManyProjectMembersParameters parameters);
+    
     public Task<ProjectMemberDto> UpdateAsync(UpdateProjectMemberParameters parameters);
     
     public Task DeleteAsync(DeleteProjectMemberParameters parameters);

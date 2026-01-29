@@ -1,7 +1,8 @@
 ﻿import type { ProjectUserRole } from "./project-user-role.ts";
 
 export type ProjectUserModel = {
-  id: string;
+  userId: string;
+  projectId: string;
   firstName: string;
   lastName: string;
   email: string;

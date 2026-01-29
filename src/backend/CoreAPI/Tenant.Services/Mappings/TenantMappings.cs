@@ -5,13 +5,14 @@ namespace Tenant.Services.Mappings;
 
 public static class TenantMappings
 {
-    public static TenantDto ToDto(this TenantEntity tenant)
+    public static TenantDto ToDto(this TenantEntity tenant, Guid ownerUserId)
     {
         return new TenantDto
         {
             Id = tenant.Id,
             Name = tenant.Name,
             Slug = tenant.Slug,
+            OwnerUserId = ownerUserId
         };
     }
 }

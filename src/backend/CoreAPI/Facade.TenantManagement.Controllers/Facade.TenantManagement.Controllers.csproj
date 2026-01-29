@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Facade.TenantManagement.Contracts\Facade.TenantManagement.Contracts.csproj" />
+      <ProjectReference Include="..\Shared.ClaimsPrincipal.Extensions\Shared.ClaimsPrincipal.Extensions.csproj" />
     </ItemGroup>
 
 </Project>

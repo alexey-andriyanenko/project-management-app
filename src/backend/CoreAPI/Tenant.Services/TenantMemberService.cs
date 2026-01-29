@@ -31,6 +31,19 @@ public class TenantMemberService(TenantDbContext dbContext) : ITenantMemberServi
         };
     }
 
+    public async Task<TenantMemberDto> GetAsync(GetTenantMemberParameters parameters)
+    {
+        var tenantMember = await dbContext.TenantMembers
+            .FirstOrDefaultAsync(tm => tm.UserId == parameters.UserId && tm.TenantId == parameters.TenantId);
+
+        if (tenantMember == null)
+        {
+            throw new TenantMemberNotFoundException(parameters.TenantId, parameters.UserId);
+        }
+
+        return tenantMember.ToDto();
+    }
+
     public async Task<TenantMemberDto> CreateAsync(CreateTenantMemberParameters parameters)
     {
         var tenant = await dbContext.TenantMembers.FirstOrDefaultAsync(x => x.TenantId == parameters.TenantId);

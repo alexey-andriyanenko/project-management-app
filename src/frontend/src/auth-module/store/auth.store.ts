@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 
 import { HttpClient } from "src/shared-module/api";
-import {authApiService, type LoginRequest, type RegisterRequest} from "../api";
+import {authApiService, type LoginRequest, type RegisterRequest, type UpdateUserRequest} from "../api";
 import { type UserModel } from "../models";
 
 class AuthStore {
@@ -94,6 +94,28 @@ class AuthStore {
 
       throw error;
     }
+  }
+
+  async updateMe(data: UpdateUserRequest): Promise<void> {
+    const res = await authApiService.updateMe(data);
+
+    runInAction(() => {
+      this._currentUser = res;
+    });
+  }
+
+  signOut(): void {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+
+    runInAction(() => {
+      this._isLogged = false;
+      this._currentUser = null;
+      this._userId = null;
+
+      HttpClient.accessToken = null;
+      HttpClient.refreshToken = null;
+    });
   }
 }
 

@@ -19,4 +19,7 @@ public class TenantResource(ITenantService tenantService) : ITenantResource
     
     public Task<TenantDto> UpdateAsync(UpdateTenantParameters parameters)
         => tenantService.UpdateAsync(parameters);
+    
+    public Task DeleteAsync(DeleteTenantParameters parameters)
+        => tenantService.DeleteAsync(parameters);
 }

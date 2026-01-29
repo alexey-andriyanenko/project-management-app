@@ -4,5 +4,7 @@ public class GetManyTagsByIdsParameters
 {
     public Guid TenantId { get; set; }
     
+    public Guid? ProjectId { get; set; }
+    
     public IReadOnlyList<Guid> TagIds { get; set; } = [];
 }

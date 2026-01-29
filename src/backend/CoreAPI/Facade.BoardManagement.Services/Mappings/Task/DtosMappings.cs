@@ -14,7 +14,7 @@ public static class DtosMappings
             TenantId = dto.TenantId,
             ProjectId = dto.ProjectId,
             BoardId = dto.BoardId,
-            BoardColumnId = dto.BoardColumnId,
+            BoardColumn = dto.BoardColumn.ToFacadeDto(),
             Title = dto.Title,
             Description = dto.Description,
             CreatedBy = createdByUser.ToFacadeDto(),
@@ -30,14 +30,31 @@ public static class DtosMappings
         };
     }
     
+    private static Facade.BoardManagement.Contracts.Dtos.TaskBoardColumnDto ToFacadeDto(this TaskBoardColumnDto dto) 
+    {
+        return new Facade.BoardManagement.Contracts.Dtos.TaskBoardColumnDto()
+        {
+            Id = dto.Id,
+            Name = dto.Name
+        };
+    }
+    
     private static Facade.BoardManagement.Contracts.Dtos.TaskUserDto ToFacadeDto(this UserDto dto)
     {
         return new Facade.BoardManagement.Contracts.Dtos.TaskUserDto()
         {
             UserId = dto.Id,
-            FirstName = dto.FirstName,
-            LastName = dto.LastName,
+            FullName = $"{dto.FirstName} {dto.LastName}",
             Email = dto.Email
+        };
+    }
+    
+    private static Facade.BoardManagement.Contracts.Dtos.TaskBoardColumnDto ToFacadeDto(this BoardColumnDto dto) 
+    {
+        return new Facade.BoardManagement.Contracts.Dtos.TaskBoardColumnDto()
+        {
+            Id = dto.Id,
+            Name = dto.Name
         };
     }
 }

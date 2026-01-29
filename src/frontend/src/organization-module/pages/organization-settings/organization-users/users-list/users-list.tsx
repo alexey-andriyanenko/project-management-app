@@ -1,7 +1,7 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Table, Avatar, Menu, IconButton, Portal } from "@chakra-ui/react";
-import { HiDotsVertical } from "react-icons/hi";
+import { Table, Avatar, Button } from "@chakra-ui/react";
+import { LuTrash2 } from "react-icons/lu";
 
 import { pickColor } from "src/shared-module/utils";
 import type { OrganizationUserModel } from "src/organization-module/models/organization-user.ts";
@@ -12,22 +12,11 @@ import { useAuthStore } from "src/auth-module/store";
 
 type UsersListProps = {
   users: OrganizationUserModel[];
-  onEdit: (user: OrganizationUserModel) => void;
   onDelete: (user: OrganizationUserModel) => void;
 };
 
-export const UsersList: React.FC<UsersListProps> = observer(({ users, onEdit, onDelete }) => {
+export const UsersList: React.FC<UsersListProps> = observer(({ users, onDelete }) => {
   const authStore = useAuthStore();
-
-  const handleMenu = (user: OrganizationUserModel, value: string) => {
-    if (value === "edit") {
-      onEdit(user);
-    }
-
-    if (value === "delete") {
-      onDelete(user);
-    }
-  };
 
   return (
     <Table.Root>
@@ -45,7 +34,7 @@ export const UsersList: React.FC<UsersListProps> = observer(({ users, onEdit, on
 
       <Table.Body>
         {users.map((user) => (
-          <Table.Row key={user.id}>
+          <Table.Row key={user.userId}>
             <Table.Cell>
               <Avatar.Root colorPalette={pickColor(`${user.firstName} ${user.lastName}`)} size="sm">
                 <Avatar.Fallback name={`${user.firstName} ${user.lastName}`} />
@@ -61,24 +50,17 @@ export const UsersList: React.FC<UsersListProps> = observer(({ users, onEdit, on
             ))}
 
             <Table.Cell>
-              <Menu.Root onSelect={({ value }) => handleMenu(user, value)}>
-                <Menu.Trigger asChild>
-                  <IconButton variant="outline">
-                    <HiDotsVertical />
-                  </IconButton>
-                </Menu.Trigger>
-                <Portal>
-                  <Menu.Positioner>
-                    <Menu.Content>
-                      <Menu.Item value="edit">Edit</Menu.Item>
-
-                      {authStore.currentUser!.id !== user.id ? (
-                        <Menu.Item value="delete">Delete</Menu.Item>
-                      ) : null}
-                    </Menu.Content>
-                  </Menu.Positioner>
-                </Portal>
-              </Menu.Root>
+              {authStore.currentUser!.id !== user.userId ? (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  colorPalette="red"
+                  onClick={() => onDelete(user)}
+                  title="Remove user from organization"
+                >
+                  <LuTrash2 />
+                </Button>
+              ) : null}
             </Table.Cell>
           </Table.Row>
         ))}

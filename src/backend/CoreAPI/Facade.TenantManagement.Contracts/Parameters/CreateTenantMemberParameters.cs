@@ -4,9 +4,17 @@ namespace Facade.TenantManagement.Contracts.Parameters;
 
 public class CreateTenantMemberParameters
 {
-    public Guid TenantId { get; set; }
+    public required string FirstName { get; set; }
     
-    public Guid MemberUserId { get; set; }
+    public required string LastName { get; set; }
+    
+    public required string Password { get; set; }
+    
+    public required string Email { get; set; }
+    
+    public required string UserName { get; set; }
+    
+    public Guid TenantId { get; set; }
     
     public TenantMemberRole Role { get; set; }
 }

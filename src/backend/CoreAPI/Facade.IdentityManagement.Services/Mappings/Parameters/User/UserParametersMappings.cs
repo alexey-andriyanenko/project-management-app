@@ -35,10 +35,8 @@ public static class UserParametersMappings
         return new Identity.Contracts.Parameters.User.UpdateUserParameters()
         {
             Id = parameters.Id,
-            Email = parameters.Email,
             FirstName = parameters.FirstName,
             LastName = parameters.LastName,
-            UserName = parameters.UserName,
         };
     }
 }

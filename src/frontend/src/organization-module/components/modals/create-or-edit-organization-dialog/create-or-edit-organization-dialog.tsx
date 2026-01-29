@@ -58,6 +58,7 @@ export const CreateOrEditOrganizationDialog: React.FC<CreateOrEditOrganizationDi
                 <Field.Root invalid={!!formState.errors.name}>
                   <Field.Label>Organization Name</Field.Label>
                   <Input
+                    placeholder="Enter organization name"
                     {...register("name", {
                       required: {
                         value: true,

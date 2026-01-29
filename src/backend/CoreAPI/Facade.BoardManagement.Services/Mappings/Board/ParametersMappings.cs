@@ -4,12 +4,21 @@ namespace Facade.BoardManagement.Services.Mappings.Board;
 
 public static class ParametersMappings
 {
+    public static GetManyBoardTypesParameters ToCoreParameters(this Contracts.Parameters.BoardType.GetManyBoardTypesByTenantIdParameters parameters)
+    {
+        return new GetManyBoardTypesParameters
+        {
+            TenantId = parameters.TenantId
+        };
+    }
+    
     public static GetBoardByIdParameters ToCoreParameters(this Contracts.Parameters.Board.GetBoardByIdParameters parameters)
     {
         return new GetBoardByIdParameters
         {
             Id = parameters.Id,
-            TenantId = parameters.TenantId
+            TenantId = parameters.TenantId,
+            ProjectId = parameters.ProjectId
         };
     }
     
@@ -18,7 +27,7 @@ public static class ParametersMappings
         return new GetManyBoardsByProjectIdParameters
         {
             ProjectId = parameters.ProjectId,
-            TenantId = parameters.TenantId
+            TenantId = parameters.TenantId,
         };
     }
     
@@ -60,6 +69,7 @@ public static class ParametersMappings
         {
             Id = parameters.Id,
             TenantId = parameters.TenantId,
+            ProjectId = parameters.ProjectId
         };
     }
 }

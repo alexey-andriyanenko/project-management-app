@@ -6,4 +6,5 @@ export type AppSidebarProps = {
 export type AppSidebarNavItemProps = {
   href: string;
   name: string;
+  onClick?: () => void;
 };

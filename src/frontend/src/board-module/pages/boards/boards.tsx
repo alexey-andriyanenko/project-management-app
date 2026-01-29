@@ -29,7 +29,7 @@ const Boards: React.FC = observer(() => {
     setLoading(true);
     boardStore
       .fetchBoards({
-        organizationId: organizationStore.currentOrganization!.id,
+        tenantId: organizationStore.currentOrganization!.id,
         projectId: projectStore.currentProject!.id,
       })
       .catch((error) => {
@@ -42,7 +42,7 @@ const Boards: React.FC = observer(() => {
     boardModalsStore.open("CreateOrEditBoardDialog", {
       onCreate: (data) =>
         boardStore.createBoard({
-          organizationId: organizationStore.currentOrganization!.id,
+          tenantId: organizationStore.currentOrganization!.id,
           projectId: projectStore.currentProject!.id,
           name: data.name,
           boardTypeId: data.typeId[0],
@@ -64,7 +64,7 @@ const Boards: React.FC = observer(() => {
       board,
       onEdit: (data) =>
         boardStore.updateBoard({
-          organizationId: organizationStore.currentOrganization!.id,
+          tenantId: organizationStore.currentOrganization!.id,
           projectId: projectStore.currentProject!.id,
           boardId: board.id,
           name: data.name,
@@ -81,7 +81,7 @@ const Boards: React.FC = observer(() => {
       title: "Are you sure you want to delete this board?",
       description: `This action cannot be undone. All tasks are going to be deleted as well. Board: ${board.name}`,
       onConfirm: () => boardStore.deleteBoard({
-        organizationId: organizationStore.currentOrganization!.id,
+        tenantId: organizationStore.currentOrganization!.id,
         projectId: projectStore.currentProject!.id,
         boardId: board.id,
       }),

@@ -1,7 +1,7 @@
 ﻿import { type ProjectUserModel, ProjectUserRole } from "src/project-module/models";
 
 export type GetProjectUserByIdRequest = {
-  organizationId: string;
+  tenantId: string;
   projectId: string;
   id: string;
 };
@@ -9,7 +9,7 @@ export type GetProjectUserByIdRequest = {
 export type GetProjectUserByIdResponse = ProjectUserModel;
 
 export type GetManyProjectUsersByIdsRequest = {
-  organizationId: string;
+  tenantId: string;
   projectId: string;
   ids: string[];
 };
@@ -19,16 +19,16 @@ export type GetManyProjectUsersByIdsResponse = {
 };
 
 export type GetManyProjectUsersRequest = {
-  organizationId: string;
+  tenantId: string;
   projectId: string;
 };
 
 export type GetManyProjectUsersResponse = {
-  users: ProjectUserModel[];
+  projectMembers: ProjectUserModel[];
 };
 
 export type AddUserToProjectRequest = {
-  organizationId: string;
+  tenantId: string;
   projectId: string;
   userId: string;
   role: ProjectUserRole;
@@ -37,9 +37,9 @@ export type AddUserToProjectRequest = {
 export type AddUserToProjectResponse = ProjectUserModel;
 
 export type AddManyUsersToProjectRequest = {
-  organizationId: string;
+  tenantId: string;
   projectId: string;
-  users: AddUserToProjectItem[];
+  members: AddUserToProjectItem[];
 };
 
 export type AddUserToProjectItem = {
@@ -48,11 +48,11 @@ export type AddUserToProjectItem = {
 };
 
 export type AddManyUsersToProjectResponse = {
-  users: ProjectUserModel[];
+  projectMembers: ProjectUserModel[];
 };
 
 export type UpdateProjectUserRequest = {
-  organizationId: string;
+  tenantId: string;
   projectId: string;
   id: string;
   role: ProjectUserRole;
@@ -61,13 +61,13 @@ export type UpdateProjectUserRequest = {
 export type UpdateProjectUserResponse = ProjectUserModel;
 
 export type RemoveProjectUserRequest = {
-  organizationId: string;
+  tenantId: string;
   projectId: string;
   id: string;
 };
 
 export type RemoveManyProjectUsersRequest = {
-  organizationId: string;
+  tenantId: string;
   projectId: string;
   ids: string[];
 };

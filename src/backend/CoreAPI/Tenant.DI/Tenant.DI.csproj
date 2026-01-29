@@ -9,6 +9,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Tenant.Client\Tenant.Client.csproj" />
       <ProjectReference Include="..\Tenant.DataAccess\Tenant.DataAccess.csproj" />
+      <ProjectReference Include="..\Tenant.Events\Tenant.Events.csproj" />
       <ProjectReference Include="..\Tenant.Services\Tenant.Services.csproj" />
     </ItemGroup>
 

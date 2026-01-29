@@ -10,4 +10,8 @@
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Facade.TagManagement.Contracts\Facade.TagManagement.Contracts.csproj" />
+    </ItemGroup>
+
 </Project>

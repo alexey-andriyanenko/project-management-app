@@ -9,6 +9,8 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ITaskService, TaskService>();
         services.AddScoped<IBoardService, BoardService>();
+        services.AddScoped<IBoardColumnService, BoardColumnService>();
+        services.AddScoped<IBoardTypeService, BoardTypeService>();
         
         return services;
     }

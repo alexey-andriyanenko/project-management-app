@@ -24,6 +24,19 @@ public class TenantMemberManagementService(
 
     public async Task<TenantMemberDto> CreateAsync(CreateTenantMemberParameters parameters)
     {
+        var user = await identityClient.UserResource.CreateAsync(
+            new Identity.Contracts.Parameters.User.CreateUserParameters()
+            {
+                FirstName = parameters.FirstName,
+                LastName = parameters.LastName,
+                Email = parameters.Email,
+                UserName = parameters.UserName,
+                Password = parameters.Password
+            });
+
+        var createMemberParameters = parameters.ToCoreParameters();
+        createMemberParameters.UserId = user.Id;
+        
         var member = await tenantClient.TenantMemberResource.CreateAsync(parameters.ToCoreParameters());
         var enrichedMembers = await EnrichTenantMembers(new List<Tenant.Contracts.Dtos.TenantMemberDto>() { member });
 
@@ -41,6 +54,59 @@ public class TenantMemberManagementService(
     public async Task DeleteAsync(DeleteTenantMemberParameters parameters)
     {
         await tenantClient.TenantMemberResource.DeleteAsync(parameters.ToCoreParameters());
+    }
+
+    public async Task<TenantMemberDto> RetryTenantMemberCreationFromInvitationAsync(RetryTenantMemberCreationFromInvitationParameters parameters)
+    {
+        var invitation = await identityClient.UserInvitationResource.GetAsync(
+            new Identity.Contracts.Parameters.UserInvite.GetUserInvitationParameters
+            {
+                InvitationId = parameters.InvitationId
+            });
+
+        if (!invitation.AcceptedAt.HasValue)
+        {
+            throw new InvalidOperationException("Invitation has not been accepted yet");
+        }
+
+        var user = await identityClient.UserResource.GetByEmailAsync(
+            new Identity.Contracts.Parameters.User.GetUserByEmailParameters 
+            { 
+                Email = invitation.Email 
+            });
+
+        if (user == null)
+        {
+            throw new InvalidOperationException($"User with email {invitation.Email} not found");
+        }
+
+        try
+        {
+            await tenantClient.TenantMemberResource.GetAsync(
+                new Tenant.Contracts.Parameters.GetTenantMemberParameters
+                {
+                    UserId = user.Id,
+                    TenantId = invitation.TenantId
+                });
+
+            throw new InvalidOperationException("Membership has already been created");
+        }
+        catch (Tenant.Contracts.Exceptions.TenantMemberNotFoundException)
+        {
+            // Expected - membership doesn't exist yet, proceed with creation
+        }
+
+        var member = await tenantClient.TenantMemberResource.CreateAsync(
+            new Tenant.Contracts.Parameters.CreateTenantMemberParameters
+            {
+                TenantId = invitation.TenantId,
+                UserId = user.Id,
+                Role = Enum.Parse<Tenant.Contracts.Dtos.TenantMemberRole>(invitation.TenantMemberRole)
+            });
+
+        var enrichedMembers = await EnrichTenantMembers(new List<Tenant.Contracts.Dtos.TenantMemberDto>() { member });
+
+        return enrichedMembers.First();
     }
     
     private async Task<IReadOnlyList<TenantMemberDto>> EnrichTenantMembers(

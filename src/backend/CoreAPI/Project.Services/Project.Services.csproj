@@ -7,8 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Infrastructure.EventBus.Contracts\Infrastructure.EventBus.Contracts.csproj" />
       <ProjectReference Include="..\Project.Contracts\Project.Contracts.csproj" />
       <ProjectReference Include="..\Project.DataAccess\Project.DataAccess.csproj" />
+      <ProjectReference Include="..\Project.Events.Contracts\Project.Events.Contracts.csproj" />
       <ProjectReference Include="..\Shared.String.Extensions\Shared.String.Extensions.csproj" />
     </ItemGroup>
 

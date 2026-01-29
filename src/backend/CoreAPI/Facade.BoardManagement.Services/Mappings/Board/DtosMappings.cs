@@ -13,6 +13,7 @@ public static class DtosMappings
             TenantId = coreApiDto.TenantId,
             CreatedByUserId = coreApiDto.CreatedByUserId,
             Columns = coreApiDto.Columns.Select(x => x.ToFacadeDto()).ToList(),
+            Name = coreApiDto.Name,
             Type = coreApiDto.Type.ToFacadeDto(),
             CreatedAt = coreApiDto.CreatedAt,
             UpdatedAt = coreApiDto.UpdatedAt,
@@ -33,7 +34,7 @@ public static class DtosMappings
         };
     }
     
-    private static Facade.BoardManagement.Contracts.Dtos.BoardTypeDto ToFacadeDto(this BoardTypeDto coreApiDto)
+    public static Facade.BoardManagement.Contracts.Dtos.BoardTypeDto ToFacadeDto(this BoardTypeDto coreApiDto)
     {
         return new Facade.BoardManagement.Contracts.Dtos.BoardTypeDto
         {

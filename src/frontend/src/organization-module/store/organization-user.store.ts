@@ -1,13 +1,12 @@
 ﻿import { makeAutoObservable, runInAction } from "mobx";
 import type { OrganizationUserModel } from "../models/organization-user.ts";
 import {
-  type CreateOrganizationUserRequest,
   type GetManyOrganizationUsersByIdsRequest,
   type GetManyOrganizationUsersRequest,
   type GetOrganizationUserByIdRequest,
   organizationUserApiService,
   type RemoveOrganizationUserRequest,
-  type UpdateOrganizationUserRequest,
+  type RetryOrganizationUserMembershipFromInvitationRequest,
 } from "src/organization-module/api";
 
 class OrganizationUsersStore {
@@ -22,14 +21,14 @@ class OrganizationUsersStore {
   }
 
   public async fetchUserById({
-    organizationId,
+    tenantId,
     id,
   }: GetOrganizationUserByIdRequest): Promise<void> {
     const res = await organizationUserApiService.getOrganizationUserById({
-      organizationId,
+      tenantId,
       id,
     });
-    const index = this._users.findIndex((user) => user.id === res.id);
+    const index = this._users.findIndex((user) => user.userId === res.userId);
 
     if (index !== -1) {
       runInAction(() => {
@@ -39,16 +38,16 @@ class OrganizationUsersStore {
   }
 
   public async fetchManyUsersByIds({
-    organizationId,
+                                     tenantId,
     ids,
   }: GetManyOrganizationUsersByIdsRequest): Promise<void> {
     const res = await organizationUserApiService.getManyOrganizationUsersByIds({
-      organizationId,
+      tenantId,
       ids,
     });
 
-    for (const user of res.users) {
-      const index = this._users.findIndex((u) => u.id === user.id);
+    for (const user of res.tenantMembers) {
+      const index = this._users.findIndex((u) => u.userId === user.userId);
 
       if (index !== -1) {
         runInAction(() => {
@@ -58,35 +57,16 @@ class OrganizationUsersStore {
     }
   }
 
-  public async fetchManyUsers({ organizationId }: GetManyOrganizationUsersRequest): Promise<void> {
-    const res = await organizationUserApiService.getManyOrganizationUsers({ organizationId });
+  public async fetchManyUsers({ tenantId }: GetManyOrganizationUsersRequest): Promise<void> {
+    const res = await organizationUserApiService.getManyOrganizationUsers({ tenantId });
     runInAction(() => {
-      this._users = res.users;
+      this._users = res.tenantMembers;
     });
-  }
-
-  public async createUser(data: CreateOrganizationUserRequest): Promise<void> {
-    const res = await organizationUserApiService.createOrganizationUser(data);
-
-    runInAction(() => {
-      this._users.push(res);
-    });
-  }
-
-  public async updateUser(data: UpdateOrganizationUserRequest): Promise<void> {
-    const res = await organizationUserApiService.updateOrganizationUser(data);
-    const index = this._users.findIndex((user) => user.id === res.id);
-
-    if (index !== -1) {
-      runInAction(() => {
-        this._users[index] = res;
-      });
-    }
   }
 
   public async removeUser(data: RemoveOrganizationUserRequest): Promise<void> {
     await organizationUserApiService.removeOrganizationUser(data);
-    const index = this._users.findIndex((user) => user.id === data.id);
+    const index = this._users.findIndex((user) => user.userId === data.id);
 
     if (index !== -1) {
       runInAction(() => {
@@ -95,11 +75,19 @@ class OrganizationUsersStore {
     }
   }
 
-  public async removeManyUsers(organizationId: string, ids: string[]): Promise<void> {
-    await organizationUserApiService.removeManyOrganizationUsers({ organizationId, ids });
+  public async removeManyUsers(tenantId: string, ids: string[]): Promise<void> {
+    await organizationUserApiService.removeManyOrganizationUsers({ tenantId, ids });
 
     runInAction(() => {
-      this._users = this._users.filter((user) => !ids.includes(user.id));
+      this._users = this._users.filter((user) => !ids.includes(user.userId));
+    });
+  }
+
+  public async retryMembershipCreationFromInvitation(data: RetryOrganizationUserMembershipFromInvitationRequest): Promise<void> {
+    const res = await organizationUserApiService.retryMembershipCreationFromInvitation(data);
+
+    runInAction(() => {
+      this._users.push(res);
     });
   }
 }

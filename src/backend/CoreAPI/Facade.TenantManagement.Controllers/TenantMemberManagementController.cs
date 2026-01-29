@@ -1,4 +1,5 @@
-﻿using Facade.TenantManagement.Contracts.Services;
+﻿using Facade.TenantManagement.Contracts.Parameters;
+using Facade.TenantManagement.Contracts.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Facade.TenantManagement.Controllers;
@@ -39,11 +40,20 @@ public class TenantMemberManagementController(ITenantMemberManagementService ten
     [HttpDelete("{memberUserId}")]
     public async Task DeleteAsync(
         [FromRoute] Guid tenantId,
-        [FromRoute] Guid memberUserId,
-        [FromBody] Contracts.Parameters.DeleteTenantMemberParameters parameters)
+        [FromRoute] Guid memberUserId)
     {
-        parameters.TenantId = tenantId;
-        parameters.MemberUserId = memberUserId;
-        await tenantMemberManagementService.DeleteAsync(parameters);
+        await tenantMemberManagementService.DeleteAsync(new DeleteTenantMemberParameters()
+        {
+            TenantId = tenantId,
+            MemberUserId = memberUserId
+        });
+    }
+
+    [HttpPost("retry-from-invitation")]
+    public async Task<Contracts.Dtos.TenantMemberDto> RetryMembershipCreationFromInvitationAsync(
+        [FromRoute] Guid tenantId,
+        [FromBody] Contracts.Parameters.RetryTenantMemberCreationFromInvitationParameters parameters)
+    {
+        return await tenantMemberManagementService.RetryTenantMemberCreationFromInvitationAsync(parameters);
     }
 }

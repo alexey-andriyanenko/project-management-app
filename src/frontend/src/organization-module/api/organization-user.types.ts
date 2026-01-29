@@ -2,31 +2,31 @@
 import type { OrganizationUserRole } from "src/organization-module/models/organization-user-role.ts";
 
 export type GetOrganizationUserByIdRequest = {
-  organizationId: string;
+  tenantId: string;
   id: string;
 };
 
 export type GetOrganizationUserByIdResponse = OrganizationUserModel;
 
 export type GetManyOrganizationUsersByIdsRequest = {
-  organizationId: string;
+  tenantId: string;
   ids: string[];
 };
 
 export type GetManyOrganizationUsersByIdsResponse = {
-  users: OrganizationUserModel[];
+  tenantMembers: OrganizationUserModel[];
 };
 
 export type GetManyOrganizationUsersRequest = {
-  organizationId: string;
+  tenantId: string;
 };
 
 export type GetManyOrganizationUsersResponse = {
-  users: OrganizationUserModel[];
+  tenantMembers: OrganizationUserModel[];
 };
 
 export type CreateOrganizationUserRequest = {
-  organizationId: string;
+  tenantId: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -44,11 +44,18 @@ export type UpdateOrganizationUserRequest = CreateOrganizationUserRequest & {
 export type UpdateOrganizationUserResponse = OrganizationUserModel;
 
 export type RemoveOrganizationUserRequest = {
-  organizationId: string;
+  tenantId: string;
   id: string;
 };
 
 export type RemoveManyOrganizationUsersRequest = {
-  organizationId: string;
+  tenantId: string;
   ids: string[];
 };
+
+export type RetryOrganizationUserMembershipFromInvitationRequest = {
+  tenantId: string;
+  invitationId: string;
+};
+
+export type RetryOrganizationUserMembershipFromInvitationResponse = OrganizationUserModel;

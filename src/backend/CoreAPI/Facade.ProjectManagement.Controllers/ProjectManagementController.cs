@@ -1,12 +1,14 @@
 ﻿using Facade.ProjectManagement.Contracts.Results;
 using Facade.ProjectManagement.Contracts.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Shared.ClaimsPrincipal.Extensions;
 
 namespace Facade.ProjectManagement.Controllers;
 
 [ApiController]
 [Route("api/v1/tenants/{tenantId}/projects")]
-public class ProjectManagementController(IProjectManagementService projectManagementService)
+public class ProjectManagementController(IProjectManagementService projectManagementService) : ControllerBase
 {
     [HttpGet("by-slug")]
     public async Task<Contracts.Dtos.ProjectDto> GetBySlugAsync(
@@ -16,7 +18,7 @@ public class ProjectManagementController(IProjectManagementService projectManage
     {
         var parameters = new Contracts.Parameters.Project.GetProjectBySlugParameters
         {
-            MemberId = Guid.Empty, // To be replaced with actual member ID from context
+            MemberId = User.GetUserId(),
             TenantId = tenantId,
             Slug = slug
         };
@@ -26,11 +28,11 @@ public class ProjectManagementController(IProjectManagementService projectManage
     [HttpGet]
     public async Task<GetManyProjectsByTenantIdResult> GetManyAsync([FromRoute] Guid tenantId)
     {
-        var parameters = new Contracts.Parameters.Project.GetManyProjectsByTenantIdParameters
+        return await projectManagementService.GetManyAsync(new Contracts.Parameters.Project.GetManyProjectsByTenantIdParameters
         {
+            UserId = User.GetUserId(),
             TenantId = tenantId
-        };
-        return await projectManagementService.GetManyAsync(parameters);
+        });
     }
 
     [HttpGet("{id}")]
@@ -39,12 +41,12 @@ public class ProjectManagementController(IProjectManagementService projectManage
         [FromRoute] Guid id
     )
     {
-        var parameters = new Contracts.Parameters.Project.GetProjectByIdParameters
+        return await projectManagementService.GetAsync(new Contracts.Parameters.Project.GetProjectByIdParameters
         {
+            UserId = User.GetUserId(),
             TenantId = tenantId,
             ProjectId = id
-        };
-        return await projectManagementService.GetAsync(parameters);
+        });
     }
 
     [HttpPost]
@@ -53,6 +55,7 @@ public class ProjectManagementController(IProjectManagementService projectManage
         [FromBody] Contracts.Parameters.Project.CreateProjectParameters parameters
     )
     {
+        parameters.UserId = User.GetUserId();
         parameters.TenantId = tenantId;
         return await projectManagementService.CreateAsync(parameters);
     }
@@ -64,6 +67,7 @@ public class ProjectManagementController(IProjectManagementService projectManage
         [FromBody] Contracts.Parameters.Project.UpdateProjectParameters parameters
     )
     {
+        parameters.UserId = User.GetUserId();
         parameters.TenantId = tenantId;
         parameters.ProjectId = id;
         return await projectManagementService.UpdateAsync(parameters);
@@ -75,11 +79,11 @@ public class ProjectManagementController(IProjectManagementService projectManage
         [FromRoute] Guid id
     )
     {
-        var parameters = new Contracts.Parameters.Project.DeleteProjectParameters
+        await projectManagementService.DeleteAsync(new Contracts.Parameters.Project.DeleteProjectParameters
         {
+            UserId = User.GetUserId(),
             TenantId = tenantId,
             ProjectId = id
-        };
-        await projectManagementService.DeleteAsync(parameters);
+        });
     }
 }

@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import {
@@ -16,57 +16,46 @@ import {
   OrganizationUserRole,
   OrganizationUserRoleToNameMap,
 } from "src/organization-module/models/organization-user-role.ts";
-import type { OrganizationUserModel } from "src/organization-module/models/organization-user.ts";
 
-type OrganizationUserFormModel = {
+type UserInvitationFormModel = {
   firstName: string;
   lastName: string;
   email: string;
-  userName: string;
-  password: string;
-  confirmPassword: string;
   role: string[];
 };
 
-export type CreateOrEditOrganizationUserDialogProps = ModalsPropsBase & {
-  user?: OrganizationUserModel;
-  onCreate?: (data: OrganizationUserFormModel) => Promise<void>;
-  onEdit?: (data: OrganizationUserFormModel) => Promise<void>;
+export type CreateUserInvitationDialogProps = ModalsPropsBase & {
+  onCreate?: (data: UserInvitationFormModel) => Promise<void>;
 };
 
-export const CreateOrEditOrganizationUserDialog: React.FC<
-  CreateOrEditOrganizationUserDialogProps
-> = ({ user, isOpen, onClose, onCreate, onEdit }) => {
-  const { formState, control, register, handleSubmit } = useForm<OrganizationUserFormModel>({
-    defaultValues: {
-      firstName: user?.firstName || "",
-      lastName: user?.lastName || "",
-      email: user?.email || "",
-      userName: user?.userName || "",
-      password: "",
-      confirmPassword: "",
-      role: user ? [user.role.toString()] : [OrganizationUserRole.Member.toString()],
-    },
-  });
+export const CreateUserInvitationDialog: React.FC<
+  CreateUserInvitationDialogProps
+> = ({ isOpen, onClose, onCreate }) => {
+  const { formState, control, register, handleSubmit } =
+    useForm<UserInvitationFormModel>({
+      defaultValues: {
+        firstName: "",
+        lastName: "",
+        email: "",
+        role: [OrganizationUserRole.Member.toString()],
+      },
+    });
 
   const collection = React.useMemo(
     () =>
       createListCollection({
-        items: Object.entries(OrganizationUserRoleToNameMap).map(([value, label]) => ({
-          label,
-          value,
-        })),
+        items: Object.entries(OrganizationUserRoleToNameMap).map(
+          ([value, label]) => ({
+            label,
+            value,
+          })
+        ),
       }),
-    [],
+    []
   );
 
   const onSubmit = handleSubmit(async (data) => {
-    if (user) {
-      await onEdit?.(data);
-    } else {
-      await onCreate?.(data);
-    }
-
+    await onCreate?.(data);
     onClose();
   });
 
@@ -77,13 +66,14 @@ export const CreateOrEditOrganizationUserDialog: React.FC<
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header>
-              <Dialog.Title>{user ? "Edit user" : "Create user"}</Dialog.Title>
+              <Dialog.Title>Create User Invitation</Dialog.Title>
             </Dialog.Header>
             <Dialog.Body pb="4">
               <Stack gap="4">
                 <Field.Root invalid={!!formState.errors.firstName}>
                   <Field.Label>First Name</Field.Label>
                   <Input
+                    placeholder="Enter first name"
                     {...register("firstName", {
                       required: {
                         value: true,
@@ -95,12 +85,15 @@ export const CreateOrEditOrganizationUserDialog: React.FC<
                       },
                     })}
                   />
-                  <Field.ErrorText>{formState.errors.firstName?.message}</Field.ErrorText>
+                  <Field.ErrorText>
+                    {formState.errors.firstName?.message}
+                  </Field.ErrorText>
                 </Field.Root>
 
                 <Field.Root invalid={!!formState.errors.lastName}>
                   <Field.Label>Last Name</Field.Label>
                   <Input
+                    placeholder="Enter last name"
                     {...register("lastName", {
                       required: {
                         value: true,
@@ -112,79 +105,30 @@ export const CreateOrEditOrganizationUserDialog: React.FC<
                       },
                     })}
                   />
-                  <Field.ErrorText>{formState.errors.lastName?.message}</Field.ErrorText>
+                  <Field.ErrorText>
+                    {formState.errors.lastName?.message}
+                  </Field.ErrorText>
                 </Field.Root>
 
                 <Field.Root invalid={!!formState.errors.email}>
                   <Field.Label>Email</Field.Label>
                   <Input
+                    placeholder="Enter email"
                     {...register("email", {
                       required: {
                         value: true,
                         message: "Email is required",
                       },
                       pattern: {
-                        value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                        value:
+                          /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                         message: "Invalid email address",
                       },
                     })}
                   />
-                  <Field.ErrorText>{formState.errors.email?.message}</Field.ErrorText>
-                </Field.Root>
-
-                <Field.Root invalid={!!formState.errors.userName}>
-                  <Field.Label>Username</Field.Label>
-                  <Input
-                    {...register("userName", {
-                      required: {
-                        value: true,
-                        message: "Username is required",
-                      },
-                      maxLength: {
-                        value: 100,
-                        message: "Username cannot exceed 100 characters",
-                      },
-                      pattern: {
-                        value: /^(?!\d)[A-Za-z0-9_]+$/,
-                        message:
-                          "Username can contain only letters, numbers, and underscores, and cannot start with a number",
-                      },
-                    })}
-                  />
-                  <Field.ErrorText>{formState.errors.userName?.message}</Field.ErrorText>
-                </Field.Root>
-
-                <Field.Root invalid={!!formState.errors.password}>
-                  <Field.Label>Password</Field.Label>
-                  <Input
-                    {...register("password", {
-                      required: {
-                        value: !user,
-                        message: "Password is required",
-                      },
-                      pattern: {
-                        value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
-                        message:
-                          "Password must contain at least 8 characters, include 1 special character, 1 digit, 1 lowercase and 1 uppercase character.",
-                      },
-                    })}
-                  />
-                  <Field.ErrorText>{formState.errors.password?.message}</Field.ErrorText>
-                </Field.Root>
-
-                <Field.Root invalid={!!formState.errors.confirmPassword}>
-                  <Field.Label>Confirm Password</Field.Label>
-                  <Input
-                    {...register("confirmPassword", {
-                      required: {
-                        value: !user,
-                        message: "Confirm password is required",
-                      },
-                      validate: (value, formValues) =>
-                        value === formValues.password || "Passwords do not match",
-                    })}
-                  />
-                  <Field.ErrorText>{formState.errors.confirmPassword?.message}</Field.ErrorText>
+                  <Field.ErrorText>
+                    {formState.errors.email?.message}
+                  </Field.ErrorText>
                 </Field.Root>
 
                 <Field.Root invalid={!!formState.errors.role}>
@@ -222,7 +166,9 @@ export const CreateOrEditOrganizationUserDialog: React.FC<
                       </Select.Root>
                     )}
                   />
-                  <Field.ErrorText>{formState.errors.role?.message}</Field.ErrorText>
+                  <Field.ErrorText>
+                    {formState.errors.role?.message}
+                  </Field.ErrorText>
                 </Field.Root>
               </Stack>
             </Dialog.Body>
@@ -233,7 +179,7 @@ export const CreateOrEditOrganizationUserDialog: React.FC<
                 </Button>
               </Dialog.ActionTrigger>
               <Button loading={formState.isSubmitting} onClick={onSubmit}>
-                Save
+                Send Invitation
               </Button>
             </Dialog.Footer>
           </Dialog.Content>

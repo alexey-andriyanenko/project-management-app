@@ -13,6 +13,9 @@ public class TenantMemberResource(ITenantMemberService tenantMemberService) : IT
     
     public Task<TenantMemberDto> CreateAsync(CreateTenantMemberParameters parameters)
         => tenantMemberService.CreateAsync(parameters);
+
+    public Task<TenantMemberDto> GetAsync(GetTenantMemberParameters parameters)
+        => tenantMemberService.GetAsync(parameters);
     
     public Task<TenantMemberDto> UpdateAsync(UpdateTenantMemberParameters parameters)
         => tenantMemberService.UpdateAsync(parameters);

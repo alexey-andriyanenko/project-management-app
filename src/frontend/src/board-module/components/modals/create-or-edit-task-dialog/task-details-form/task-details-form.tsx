@@ -20,6 +20,7 @@ import type { TaskFormValues } from "../create-or-edit-task-dialog.types.ts";
 import type { ProjectUserModel } from "src/project-module/models";
 import { pickColor } from "src/shared-module/utils";
 import { useTagStore } from "src/project-module/store";
+import { extractTextFromTiptap } from "src/board-module/utils/extract-text-from-tiptap-editor";
 
 type TaskDetailsFormProps = {
   board: BoardModel;
@@ -36,17 +37,17 @@ export const TaskDetailsForm: React.FC<TaskDetailsFormProps> = ({ board }) => {
   React.useEffect(() => {
     projectUserApiService
       .getManyProjectUsers({
-        organizationId: organizationStore.currentOrganization!.id,
+        tenantId: organizationStore.currentOrganization!.id,
         projectId: board.projectId,
       })
       .then((res) => {
-        setAssignees(res.users);
+        setAssignees(res.projectMembers);
       });
 
     if (tagStore.tags.length === 0) {
       tagStore.fetchTagsByProjectId(
           {
-            organizationId: organizationStore.currentOrganization!.id,
+            tenantId: organizationStore.currentOrganization!.id,
             projectId: board.projectId
           }
       );
@@ -63,7 +64,7 @@ export const TaskDetailsForm: React.FC<TaskDetailsFormProps> = ({ board }) => {
     return createListCollection({
       items: assignees.map((user) => ({
         label: `${user.firstName} ${user.lastName}`,
-        value: user.id,
+        value: user.userId,
       })),
     });
   }, [assignees]);
@@ -88,6 +89,7 @@ export const TaskDetailsForm: React.FC<TaskDetailsFormProps> = ({ board }) => {
             {...register("title", {
               required: { value: true, message: "Title is required" },
             })}
+            placeholder="Enter task title"
           />
           <Field.ErrorText>{formState.errors.title?.message}</Field.ErrorText>
         </Field.Root>
@@ -230,11 +232,14 @@ export const TaskDetailsForm: React.FC<TaskDetailsFormProps> = ({ board }) => {
             name="description"
             control={control}
             rules={{
-              required: { value: true, message: "Description is required" },
+              validate: (value) => {
+                const text = extractTextFromTiptap(value);
+                return text.trim().length > 0 || "Description is required";
+              },
             }}
-            render={({ field }) => <TipTapEditor value={field.value} onChange={field.onChange} />}
+            render={({ field }) => <TipTapEditor value={field.value} onChange={field.onChange} placeholder="Enter task description..." />}
           />
-          <Field.ErrorText>{formState.errors.description?.message}</Field.ErrorText>
+          <Field.ErrorText>{formState.errors.description?.message as unknown as string}</Field.ErrorText>
         </Field.Root>
       </Stack>
     </Stack>

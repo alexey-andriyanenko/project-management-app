@@ -9,7 +9,7 @@ import type {
 import type { TagModel } from "../models/tag.ts";
 
 export type GetTagsByProjectIdRequest = {
-  organizationId: string;
+  tenantId: string;
   projectId: string;
 };
 
@@ -36,8 +36,8 @@ type UpdateTagRequestBody = {
 class TagApiService {
   public async getManyByProjectId(data: GetTagsByProjectIdRequest): Promise<GetTagsResponse> {
     const response = await appHttpClient
-      .get<GetTagsResponseModel>("/organizations/:organizationId/tags/by-project")
-      .setRouteParams({ organizationId: data.organizationId })
+      .get<GetTagsResponseModel>("/tenants/:tenantId/tags")
+      .setRouteParams({ tenantId: data.tenantId })
       .setSearchParams({ projectId: data.projectId })
       .send();
 
@@ -53,8 +53,8 @@ class TagApiService {
     };
 
     const response = await appHttpClient
-      .post<CreateTagRequestBody, TagResponseModel>("/organizations/:organizationId/tags")
-      .setRouteParams({ organizationId: data.organizationId })
+      .post<CreateTagRequestBody, TagResponseModel>("/tenants/:tenantId/tags")
+      .setRouteParams({ tenantId: data.tenantId })
       .setSearchParams({ projectId: data.projectId })
       .send(requestBody);
 
@@ -68,18 +68,18 @@ class TagApiService {
     };
 
     const response = await appHttpClient
-      .put<UpdateTagRequestBody, TagResponseModel>("/organizations/:organizationId/tags/:tagId")
-      .setRouteParams({ organizationId: data.organizationId, tagId: data.tagId })
+      .put<UpdateTagRequestBody, TagResponseModel>("/tenants/:tenantId/tags/:tagId")
+      .setRouteParams({ tenantId: data.tenantId, tagId: data.tagId })
       .setSearchParams({ projectId: data.projectId })
       .send(requestBody);
 
     return this.toTagDomainModel(response);
   }
 
-  public async delete(organizationId: string, tagId: string, projectId: string): Promise<void> {
+  public async delete(tenantId: string, tagId: string, projectId: string): Promise<void> {
     await appHttpClient
-      .delete<void>("/organizations/:organizationId/tags/:tagId")
-      .setRouteParams({ organizationId, tagId })
+      .delete<void>("/tenants/:tenantId/tags/:tagId")
+      .setRouteParams({ tenantId, tagId })
       .setSearchParams({ projectId })
       .send();
   }

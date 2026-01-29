@@ -1,5 +1,5 @@
 export type TaskTagModel = {
-  id: string;
+  tagId: string;
   name: string;
   color: string;
 };

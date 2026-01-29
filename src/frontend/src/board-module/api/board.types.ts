@@ -29,7 +29,7 @@ export type BoardTypeResponseModel = {
 
 export type GetManyBoardsRequest = {
   projectId: string;
-  organizationId: string;
+  tenantId: string;
 };
 
 export type GetManyBoardsResponse = {
@@ -39,14 +39,14 @@ export type GetManyBoardsResponse = {
 export type GetBoardByIdRequest = {
   boardId: string;
   projectId: string;
-  organizationId: string;
+  tenantId: string;
 };
 
 export type GetBoardByIdResponse = BoardModel;
 
 export type CreateBoardRequest = {
   projectId: string;
-  organizationId: string;
+  tenantId: string;
   name: string;
   boardTypeId: string;
   columns: CreateBoardColumnItemRequest[];
@@ -61,7 +61,7 @@ export type CreateBoardResponse = BoardModel;
 export type UpdateBoardRequest = {
   boardId: string;
   projectId: string;
-  organizationId: string;
+  tenantId: string;
   name: string;
   columns: CreateOrUpdateBoardColumnItemRequest[];
 };
@@ -76,13 +76,13 @@ export type UpdateBoardResponse = BoardModel;
 export type DeleteBoardRequest = {
   boardId: string;
   projectId: string;
-  organizationId: string;
+  tenantId: string;
 };
 
 export type CreateBoardColumnRequest = {
   boardId: string;
   projectId: string;
-  organizationId: string;
+  tenantId: string;
   name: string;
   order: number;
 };
@@ -93,7 +93,7 @@ export type UpdateBoardColumnRequest = {
   boardId: string;
   boardColumnId: string;
   projectId: string;
-  organizationId: string;
+  tenantId: string;
   name: string;
   order: number;
 };
@@ -102,11 +102,11 @@ export type DeleteBoardColumnRequest = {
   boardId: string;
   boardColumnId: string;
   projectId: string;
-  organizationId: string;
+  tenantId: string;
 };
 
 export type GetManyBoardTypesRequest = {
-  organizationId: string;
+  tenantId: string;
   projectId: string;
 };
 

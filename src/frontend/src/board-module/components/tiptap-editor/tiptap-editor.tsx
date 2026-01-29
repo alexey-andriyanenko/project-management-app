@@ -2,6 +2,7 @@
 import { EditorContent, type JSONContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
 import { Box, Button, Flex, Input, Dialog } from "@chakra-ui/react";
 import { LuBold, LuItalic, LuList, LuLink } from "react-icons/lu";
 
@@ -11,15 +12,19 @@ type TipTapEditorProps = {
   value: JSONContent;
   onChange: (value: JSONContent) => void;
   className?: string;
+  placeholder?: string;
 };
 
-export const TipTapEditor: React.FC<TipTapEditorProps> = ({ value, onChange, className }) => {
+export const TipTapEditor: React.FC<TipTapEditorProps> = ({ value, onChange, className, placeholder = "Enter description..." }) => {
   const editor = useEditor({
     extensions: [
       StarterKit,
       Link.configure({
         openOnClick: false,
         autolink: false,
+      }),
+      Placeholder.configure({
+        placeholder,
       }),
     ],
     content: value,

@@ -53,12 +53,11 @@ const ProjectsList: React.FC = observer(() => {
         projectStore.createProject({
           name: data.name,
           description: data.description,
-          users: data.users.map((user) => ({
+          members: data.users.map((user) => ({
             userId: user.userId[0],
             role: Number(user.role),
           })),
-          visibility: Number(data.visibility),
-          organizationId: organizationStore.currentOrganization!.id,
+          tenantId: organizationStore.currentOrganization!.id,
         }),
     });
   };

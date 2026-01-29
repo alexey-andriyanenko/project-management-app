@@ -8,32 +8,32 @@ import type {
 } from "./project.types.ts";
 
 class ProjectApiService {
-  public async getProjectById(organizationId: string, projectId: string) {
+  public async getProjectById(tenantId: string, projectId: string) {
     return await appHttpClient
-      .get<CreateProjectResponse>("/tenants/:organizationId/projects/:projectId")
-      .setRouteParams({ organizationId, projectId })
+      .get<CreateProjectResponse>("/tenants/:tenantId/projects/:projectId")
+      .setRouteParams({ tenantId, projectId })
       .send();
   }
 
-  public async getProjectBySlug(organizationId: string, projectSlug: string) {
+  public async getProjectBySlug(tenantId: string, projectSlug: string) {
     return await appHttpClient
-      .get<CreateProjectResponse>("/tenants/:organizationId/projects/by-slug")
-      .setRouteParams({ organizationId })
+      .get<CreateProjectResponse>("/tenants/:tenantId/projects/by-slug")
+      .setRouteParams({ tenantId })
       .setSearchParams({ slug: projectSlug })
       .send();
   }
 
-  public async getManyProjects(organizationId: string) {
+  public async getManyProjects(tenantId: string) {
     return await appHttpClient
-      .get<GetProjectsResponse>("/tenants/:organizationId/projects")
-      .setRouteParams({ organizationId })
+      .get<GetProjectsResponse>("/tenants/:tenantId/projects")
+      .setRouteParams({ tenantId })
       .send();
   }
 
   public async createProject(data: CreateProjectRequest) {
     return await appHttpClient
-      .post<CreateProjectRequest, CreateProjectResponse>("/tenants/:organizationId/projects")
-      .setRouteParams({ organizationId: data.organizationId })
+      .post<CreateProjectRequest, CreateProjectResponse>("/tenants/:tenantId/projects")
+      .setRouteParams({ tenantId: data.tenantId })
       .send(data);
   }
 
@@ -42,15 +42,15 @@ class ProjectApiService {
       .put<
         UpdateProjectRequest,
         UpdateProjectResponse
-      >("/tenants/:organizationId/projects/:projectId")
-      .setRouteParams({ organizationId: data.organizationId, projectId: data.projectId })
+      >("/tenants/:tenantId/projects/:projectId")
+      .setRouteParams({ tenantId: data.tenantId, projectId: data.projectId })
       .send(data);
   }
 
-  public async deleteProject(organizationId: string, projectId: string) {
+  public async deleteProject(tenantId: string, projectId: string) {
     return await appHttpClient
-      .delete<void>("/tenants/:organizationId/projects/:projectId")
-      .setRouteParams({ organizationId, projectId })
+      .delete<void>("/tenants/:tenantId/projects/:projectId")
+      .setRouteParams({ tenantId, projectId })
       .send();
   }
 }

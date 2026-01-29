@@ -50,7 +50,6 @@ public static class ParametersMappings
         return new Tenant.Contracts.Parameters.CreateTenantMemberParameters
         {
             TenantId = parameters.TenantId,
-            UserId = parameters.MemberUserId,
             Role = (Tenant.Contracts.Dtos.TenantMemberRole)parameters.Role
         };
     }
@@ -71,6 +70,14 @@ public static class ParametersMappings
         {
             TenantId = parameters.TenantId,
             UserId = parameters.MemberUserId,
+        };
+    }
+    
+    public static Tenant.Contracts.Parameters.DeleteTenantParameters ToCoreParameters(this Facade.TenantManagement.Contracts.Parameters.DeleteTenantParameters parameters) 
+    {
+        return new Tenant.Contracts.Parameters.DeleteTenantParameters
+        {
+            TenantId = parameters.TenantId,
         };
     }
 }

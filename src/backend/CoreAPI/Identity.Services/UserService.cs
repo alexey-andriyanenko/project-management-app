@@ -25,7 +25,14 @@ public class UserService(IdentityDbContext dbContext) : IUserService
         return user.ToDto();
     }
     
-    public async Task<GetManyUsersByIdResults> GetManyAsync(GetManyUsersByIdsParameters parameters) 
+    public async Task<UserDto?> GetByEmailAsync(GetUserByEmailParameters parameters)
+    {
+        var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Email == parameters.Email);
+        
+        return user?.ToDto();
+    }
+    
+    public async Task<GetManyUsersByIdResults> GetManyAsync(GetManyUsersByIdsParameters parameters)
     {
         var users = await dbContext.Users
             .Where(x => parameters.Ids.Contains(x.Id))
@@ -77,8 +84,6 @@ public class UserService(IdentityDbContext dbContext) : IUserService
 
         user.FirstName = parameters.FirstName;
         user.LastName = parameters.LastName;
-        user.Email = parameters.Email;
-        user.UserName = parameters.UserName;
 
         dbContext.Users.Update(user);
         await dbContext.SaveChangesAsync();

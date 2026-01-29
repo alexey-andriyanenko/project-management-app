@@ -3,24 +3,16 @@ import { authStore } from "src/auth-module/store/auth.store.ts";
 
 export const appHttpClient = new HttpClient({
   baseUrl: import.meta.env.VITE_API_URL,
-  interceptors: [
-    async (request: XMLHttpRequest) => {
-      if (request.status === 401 && window.location.pathname !== "/auth/login") {
-        const newAccessToken = await authStore.signInWithRefreshToken();
+  onTokenRefresh: async () => {
+    if (window.location.pathname === "/auth/login") {
+      return null;
+    }
+    return await authStore.signInWithRefreshToken();
+  },
+});
 
-        if (newAccessToken) {
-          request.setRequestHeader("Authorization", `Bearer ${newAccessToken}`);
-          request.send();
-          return;
-        }
-
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-
-        window.location.href = "/auth/login";
-      }
-    },
-  ],
+export const anonymousHttpClient = new HttpClient({
+  baseUrl: import.meta.env.VITE_API_URL,
 });
 
 export { HttpClient };

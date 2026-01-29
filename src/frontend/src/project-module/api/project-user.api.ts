@@ -1,5 +1,6 @@
 ﻿import { appHttpClient } from "src/shared-module/api";
 import type {
+  AddManyUsersToProjectRequest, AddManyUsersToProjectResponse,
   AddUserToProjectRequest,
   AddUserToProjectResponse,
   GetManyProjectUsersByIdsRequest,
@@ -18,10 +19,10 @@ class ProjectUserApiService {
   getProjectUserById(data: GetProjectUserByIdRequest) {
     return appHttpClient
       .get<GetProjectUserByIdResponse>(
-        "/tenants/:organizationId/projects/:projectId/users/:userId",
+        "/tenants/:tenantId/projects/:projectId/users/:userId",
       )
       .setRouteParams({
-        organizationId: data.organizationId,
+        tenantId: data.tenantId,
         projectId: data.projectId,
         userId: data.id,
       })
@@ -31,10 +32,10 @@ class ProjectUserApiService {
   getManyProjectUsersByIds(data: GetManyProjectUsersByIdsRequest) {
     return appHttpClient
       .post<GetManyProjectUsersByIdsRequest, GetManyProjectUsersByIdsResponse>(
-        "/tenants/:organizationId/projects/:projectId/users",
+        "/tenants/:tenantId/projects/:projectId/members",
       )
       .setRouteParams({
-        organizationId: data.organizationId,
+        tenantId: data.tenantId,
         projectId: data.projectId,
       })
       .setSearchParams({
@@ -45,9 +46,9 @@ class ProjectUserApiService {
 
   getManyProjectUsers(data: GetManyProjectUsersRequest) {
     return appHttpClient
-      .get<GetManyProjectUsersResponse>("/tenants/:organizationId/projects/:projectId/users")
+      .get<GetManyProjectUsersResponse>("/tenants/:tenantId/projects/:projectId/members")
       .setRouteParams({
-        organizationId: data.organizationId,
+        tenantId: data.tenantId,
         projectId: data.projectId,
       })
       .send();
@@ -56,11 +57,23 @@ class ProjectUserApiService {
   addUserToProject(data: AddUserToProjectRequest) {
     return appHttpClient
       .post<AddUserToProjectRequest, AddUserToProjectResponse>(
-        "/tenants/:organizationId/projects/:projectId/users/add",
+        "/tenants/:tenantId/projects/:projectId/members",
       )
       .setRouteParams({
-        organizationId: data.organizationId,
+        tenantId: data.tenantId,
         projectId: data.projectId,
+      })
+      .send(data);
+  }
+
+  addManyUsersToProject(data: AddManyUsersToProjectRequest) {
+    return appHttpClient
+      .post<AddManyUsersToProjectRequest, AddManyUsersToProjectResponse>(
+        "/tenants/:tenantId/projects/:projectId/members/bulk",
+      )
+      .setRouteParams({
+        tenantId: data.tenantId,
+        projectId: data.projectId
       })
       .send(data);
   }
@@ -68,10 +81,10 @@ class ProjectUserApiService {
   updateProjectUser(data: UpdateProjectUserRequest) {
     return appHttpClient
       .put<UpdateProjectUserRequest, UpdateProjectUserResponse>(
-        "/tenants/:organizationId/projects/:projectId/users/:userId",
+        "/tenants/:tenantId/projects/:projectId/members/:userId",
       )
       .setRouteParams({
-        organizationId: data.organizationId,
+        tenantId: data.tenantId,
         projectId: data.projectId,
         userId: data.id,
       })
@@ -80,9 +93,9 @@ class ProjectUserApiService {
 
   removeProjectUser(data: RemoveProjectUserRequest): Promise<void> {
     return appHttpClient
-      .delete<void>("/tenants/:organizationId/projects/:projectId/users/:userId")
+      .delete<void>("/tenants/:tenantId/projects/:projectId/members/:userId")
       .setRouteParams({
-        organizationId: data.organizationId,
+        tenantId: data.tenantId,
         projectId: data.projectId,
         userId: data.id,
       })
@@ -91,9 +104,9 @@ class ProjectUserApiService {
 
   removeManyProjectUsers(data: RemoveManyProjectUsersRequest): Promise<void> {
     return appHttpClient
-      .delete<void>("/tenants/:organizationId/projects/:projectId/users")
+      .delete<void>("/tenants/:tenantId/projects/:projectId/members")
       .setRouteParams({
-        organizationId: data.organizationId,
+        tenantId: data.tenantId,
         projectId: data.projectId,
       })
       .setSearchParams({

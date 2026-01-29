@@ -7,4 +7,6 @@ public interface IIdentityClient
     public IAuthResource AuthResource { get; }
     
     public IUserResource UserResource { get; }
+    
+    public IUserInvitationResource UserInvitationResource { get; }
 }

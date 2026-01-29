@@ -1,7 +1,7 @@
-﻿using Facade.TenantManagement.Contracts.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Facade.TenantManagement.Contracts.Parameters;
+using Facade.TenantManagement.Contracts.Services;
 using Microsoft.AspNetCore.Mvc;
+using Shared.ClaimsPrincipal.Extensions;
 
 namespace Facade.TenantManagement.Controllers;
 
@@ -13,21 +13,24 @@ public class TenantManagementController(ITenantManagementService tenantManagemen
     public async Task<Contracts.Dtos.TenantDto> GetAsync(
         [FromQuery] Contracts.Parameters.GetTenantBySlugParameters parameters)
     {
-        // parameters.MemberId = httpContextAccessor.HttpContext.User
+        parameters.MemberId = User.GetUserId();
         return await tenantManagementService.GetAsync(parameters);
     }
     
     [HttpGet]
-    public async Task<ActionResult<Contracts.Results.GetManyTenantsByUserIdResult>> GetManyByUserIdAsync(
-        [FromQuery] Contracts.Parameters.GetManyTenantsByUserIdParameters parameters)
+    public async Task<ActionResult<Contracts.Results.GetManyTenantsByUserIdResult>> GetManyByUserIdAsync()
     {
-        return await tenantManagementService.GetManyAsync(parameters);
+        return await tenantManagementService.GetManyAsync(new GetManyTenantsByUserIdParameters()
+        {
+            UserId = User.GetUserId()
+        });
     }
 
     [HttpPost]
     public async Task<Contracts.Dtos.TenantDto> CreateAsync(
         [FromBody] Contracts.Parameters.CreateTenantParameters parameters)
     {
+        parameters.UserId = User.GetUserId();
         return await tenantManagementService.CreateAsync(parameters);
     }
 
@@ -36,7 +39,19 @@ public class TenantManagementController(ITenantManagementService tenantManagemen
         [FromRoute] Guid tenantId,
         [FromBody] Contracts.Parameters.UpdateTenantParameters parameters)
     {
+        parameters.UserId = User.GetUserId();
         parameters.TenantId = tenantId;
         return await tenantManagementService.UpdateAsync(parameters);
+    }
+
+    [HttpDelete("{tenantId}")]
+    public async Task<IActionResult> DeleteAsync([FromRoute] Guid tenantId)
+    {
+        await tenantManagementService.DeleteAsync(new Contracts.Parameters.DeleteTenantParameters
+        {
+            TenantId = tenantId,
+            UserId = User.GetUserId()
+        });
+        return NoContent();
     }
 }

@@ -3,6 +3,7 @@ using Board.Contracts.Parameters.Board;
 using Board.Contracts.Results;
 using Board.Contracts.Services;
 using Board.DataAccess;
+using Board.DataAccess.Constants;
 using Board.DataAccess.Entities;
 using Board.Services.Mappings;
 using Microsoft.EntityFrameworkCore;
@@ -16,14 +17,19 @@ public class BoardService(BoardDbContext dbContext) : IBoardService
         var board = await dbContext.Boards
             .Include(x => x.Columns)
             .Include(x => x.BoardType)
-            .FirstOrDefaultAsync(b => b.TenantId == parameters.TenantId && b.Id == parameters.Id);
+            .FirstOrDefaultAsync(b => b.TenantId == parameters.TenantId && b.ProjectId == parameters.ProjectId && b.Id == parameters.Id);
 
         if (board == null)
         {
-            throw new BoardNotFoundException(parameters.Id, parameters.TenantId);
+            throw new BoardNotFoundException(tenantId: parameters.TenantId, projectId: parameters.ProjectId, boardId: parameters.Id);
         }
         
-        return board.ToDto();
+        var dto = board.ToDto();
+        dto.Columns = dto.Columns
+            .OrderBy(c => c.Order)
+            .ToList();
+        
+        return dto;
     }
     
     public async Task<Board.Contracts.Results.GetManyBoardsByProjectIdResult> GetManyByProjectIdAsync(Board.Contracts.Parameters.Board.GetManyBoardsByProjectIdParameters parameters)
@@ -36,7 +42,15 @@ public class BoardService(BoardDbContext dbContext) : IBoardService
 
         return new GetManyBoardsByProjectIdResult()
         {
-            Boards = boards.Select(x => x.ToDto()).ToList()
+            Boards = boards.Select(x =>
+            {
+                var dto = x.ToDto();
+                dto.Columns = dto.Columns
+                    .OrderBy(c => c.Order)
+                    .ToList();
+                
+                return dto;
+            }).ToList()
         };
     }
     
@@ -53,15 +67,30 @@ public class BoardService(BoardDbContext dbContext) : IBoardService
             CreatedByUserId = parameters.UserId,
         };
         
-        var columns = new List<BoardColumnEntity>();
+        var boardType = await dbContext.BoardTypes
+            .FirstOrDefaultAsync(bt => bt.Id == parameters.BoardTypeId && bt.TenantId == parameters.TenantId);
 
-        for (var i = 0; i < parameters.Columns.Count; i++)
+        var defaultColumns = GetDefaultColumnsForBoardType(boardType?.Name);
+        
+        var duplicateColumn = parameters.Columns
+            .FirstOrDefault(c => defaultColumns.Any(dc => dc.Equals(c.Name, StringComparison.OrdinalIgnoreCase)));
+        
+        if (duplicateColumn != null)
+        {
+            throw new DuplicateColumnNamesException(duplicateColumn.Name);
+        }
+        
+        var allColumnNames = defaultColumns.Concat(parameters.Columns.Select(c => c.Name)).ToList();
+        
+        var columns = new List<BoardColumnEntity>();
+        
+        for (var i = 0; i < allColumnNames.Count; i++)
         {
             var column = new BoardColumnEntity()
             {
                 Id = Guid.NewGuid(),
                 BoardId = board.Id,
-                Name = parameters.Columns[i].Name,
+                Name = allColumnNames[i],
                 Order = i + 1,
                 CreatedAt = DateTime.UtcNow,
                 CreatedByUserId = parameters.UserId,
@@ -75,18 +104,34 @@ public class BoardService(BoardDbContext dbContext) : IBoardService
         dbContext.Boards.Add(board);
         await dbContext.SaveChangesAsync();
         
-        return board.ToDto();
+        var createdBoard = await dbContext.Boards
+            .Include(x => x.Columns)
+            .Include(x => x.BoardType)
+            .FirstOrDefaultAsync(b => b.Id == board.Id);
+        
+        if (createdBoard == null)
+        {
+            throw new BoardNotFoundException(tenantId: parameters.TenantId, projectId: parameters.ProjectId, boardId: board.Id);
+        }
+        
+        var dto = createdBoard.ToDto();
+        dto.Columns = dto.Columns
+            .OrderBy(c => c.Order)
+            .ToList();
+        
+        return dto;
     }
     
     public async Task<Board.Contracts.Dtos.BoardDto> UpdateAsync(Board.Contracts.Parameters.Board.UpdateBoardParameters parameters)
     {
         var board = await dbContext.Boards
             .Include(x => x.Columns)
-            .FirstOrDefaultAsync(b => b.TenantId == parameters.TenantId && b.Id == parameters.TenantId);
+            .Include(x => x.BoardType)
+            .FirstOrDefaultAsync(b => b.TenantId == parameters.TenantId && b.ProjectId == parameters.ProjectId && b.Id == parameters.Id);
         
         if (board == null)
         {
-            throw new BoardNotFoundException(parameters.Id, parameters.TenantId);
+            throw new BoardNotFoundException(tenantId: parameters.TenantId, projectId: parameters.ProjectId, boardId: parameters.Id);
         }
         
         if (board.Name != parameters.Name) 
@@ -97,17 +142,22 @@ public class BoardService(BoardDbContext dbContext) : IBoardService
         
         await dbContext.SaveChangesAsync();
         
-        return board.ToDto();
+        var dto = board.ToDto();
+        dto.Columns = dto.Columns
+            .OrderBy(c => c.Order)
+            .ToList();
+        
+        return dto;
     }
     
     public async Task DeleteAsync(Board.Contracts.Parameters.Board.DeleteBoardParameters parameters)
     {
         var board = dbContext.Boards
-            .FirstOrDefault(b => b.TenantId == parameters.TenantId && b.Id == parameters.Id);
+            .FirstOrDefault(b => b.TenantId == parameters.TenantId &&  b.ProjectId == parameters.ProjectId && b.Id == parameters.Id);
         
         if (board == null)
         {
-            throw new BoardNotFoundException(parameters.Id, parameters.TenantId);
+            throw new BoardNotFoundException(tenantId: parameters.TenantId, projectId: parameters.ProjectId, boardId: parameters.Id);
         } 
         
         dbContext.Boards.Remove(board);
@@ -126,5 +176,62 @@ public class BoardService(BoardDbContext dbContext) : IBoardService
         await dbContext.Boards
             .Where(b => b.TenantId == parameters.TenantId && b.ProjectId == parameters.ProjectId)
             .ExecuteDeleteAsync(cancellationToken);
+    }
+    
+    public async Task SeedBoardTypesForTenantAsync(Guid tenantId, CancellationToken cancellationToken)
+    {
+        var existingBoardTypes = await dbContext.BoardTypes
+            .Where(bt => bt.TenantId == tenantId)
+            .ToListAsync(cancellationToken);
+        
+        if (existingBoardTypes.Any())
+        {
+            return;
+        }
+        
+        var defaultBoardTypes = new List<BoardTypeEntity>()
+        {
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = BoardTypeNames.Kanban,
+                IsEssential = true,
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = BoardTypeNames.Scrum,
+                IsEssential = true,
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = BoardTypeNames.Backlog,
+                IsEssential = true,
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = BoardTypeNames.Custom,
+                IsEssential = false,
+            },
+        };
+        
+        dbContext.BoardTypes.AddRange(defaultBoardTypes);
+        await dbContext.SaveChangesAsync(cancellationToken);
+    }
+    
+    private List<string> GetDefaultColumnsForBoardType(string? boardTypeName)
+    {
+        return boardTypeName switch
+        {
+            BoardTypeNames.Scrum => new List<string> { "To Do", "In Progress", "In Review", "Done" },
+            BoardTypeNames.Kanban => new List<string> { "Backlog", "To Do", "In Progress", "Done" },
+            _ => new List<string>()
+        };
     }
 }

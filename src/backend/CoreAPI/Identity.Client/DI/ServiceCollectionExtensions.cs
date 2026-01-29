@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IAuthResource, AuthResource>();
         services.AddScoped<IUserResource, UserResource>();
+        services.AddScoped<IUserInvitationResource, UserInvitationResource>();
         services.AddScoped<IIdentityClient, IdentityClient>();
         
         return services;

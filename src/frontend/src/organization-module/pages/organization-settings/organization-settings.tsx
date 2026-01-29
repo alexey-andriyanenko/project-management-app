@@ -1,9 +1,11 @@
 import React from "react";
 
-import { Flex, Heading } from "@chakra-ui/react";
+import { Flex, Heading, Tabs } from "@chakra-ui/react";
+import { LuUsers, LuMail } from "react-icons/lu";
 
 import { OrganizationSidebar } from "src/organization-module/components/organization-sidebar";
 import OrganizationUsers from "./organization-users";
+import { OrganizationInvitations } from "./user-invitations";
 import { OrganizationForm } from "src/organization-module/pages/organization-settings/organization-form";
 
 const OrganizationSettings: React.FC = () => {
@@ -15,7 +17,25 @@ const OrganizationSettings: React.FC = () => {
         <Heading> Organization Settings </Heading>
 
         <OrganizationForm />
-        <OrganizationUsers />
+
+        <Tabs.Root defaultValue="users">
+          <Tabs.List>
+            <Tabs.Trigger value="users">
+              <LuUsers />
+              Users
+            </Tabs.Trigger>
+            <Tabs.Trigger value="invitations">
+              <LuMail />
+              Invitations
+            </Tabs.Trigger>
+          </Tabs.List>
+          <Tabs.Content value="users">
+            <OrganizationUsers />
+          </Tabs.Content>
+          <Tabs.Content value="invitations">
+            <OrganizationInvitations />
+          </Tabs.Content>
+        </Tabs.Root>
       </Flex>
     </Flex>
   );

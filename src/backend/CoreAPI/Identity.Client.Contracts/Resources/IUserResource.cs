@@ -8,6 +8,8 @@ public interface IUserResource
 {
     public Task<UserDto> GetAsync(GetUserByIdParameters parameters);
     
+    public Task<UserDto?> GetByEmailAsync(GetUserByEmailParameters parameters);
+    
     public Task<GetManyUsersByIdResults> GetManyAsync(GetManyUsersByIdsParameters parameters);
     
     public Task<UserDto> CreateAsync(CreateUserParameters parameters);

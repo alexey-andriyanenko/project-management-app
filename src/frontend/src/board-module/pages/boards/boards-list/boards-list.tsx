@@ -1,6 +1,6 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Table, Menu, IconButton, Portal } from "@chakra-ui/react";
+import { Table, Menu, IconButton, Portal, Text, Stack } from "@chakra-ui/react";
 import { HiDotsVertical } from "react-icons/hi";
 
 import { BOARDS_LIST_COLUMNS } from "./boards-list.constants.ts";
@@ -42,6 +42,19 @@ export const BoardsList: React.FC<BoardsListProps> = observer(
 
       return (val as string) || "N/A";
     };
+
+    if (boards.length === 0) {
+      return (
+        <Stack gap={3} py={8} align="center">
+          <Text fontSize="lg" fontWeight="medium" color="gray.600">
+            No boards found
+          </Text>
+          <Text fontSize="sm" color="gray.500">
+            Create a board to get started
+          </Text>
+        </Stack>
+      );
+    }
 
     return (
       <Table.Root>

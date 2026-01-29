@@ -5,8 +5,15 @@ using Tenant.Events.Contracts;
 
 namespace Board.Events;
 
-public class TenantEventsHandler(IBoardService boardService) : IEventHandler<TenantDeletedEvent>
+public class TenantEventsHandler(IBoardService boardService) :  IEventHandler<TenantCreatedEvent>, IEventHandler<TenantDeletedEvent>
 {
+    public async Task HandleAsync(
+        TenantCreatedEvent @event,
+        CancellationToken cancellationToken = default)
+    {
+        await boardService.SeedBoardTypesForTenantAsync(@event.TenantId, cancellationToken);
+    }
+    
     public async Task HandleAsync(
         TenantDeletedEvent @event,
         CancellationToken cancellationToken = default)

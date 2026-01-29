@@ -24,7 +24,7 @@ const BoardRouteGuard: React.FC<React.PropsWithChildren> = ({ children }) => {
 
     boardStore
       .fetchCurrentBoardById({
-        organizationId: organizationStore.currentOrganization!.id,
+        tenantId: organizationStore.currentOrganization!.id,
         projectId: projectStore.currentProject!.id,
         boardId: routeParams.boardId,
       })

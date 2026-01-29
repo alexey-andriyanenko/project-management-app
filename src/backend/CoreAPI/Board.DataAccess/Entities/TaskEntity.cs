@@ -17,6 +17,8 @@ public class TaskEntity
     public BoardEntity? Board { get; set; }
     
     public Guid BoardColumnId { get; set; }
+    
+    public BoardColumnEntity? BoardColumn { get; set; }
 
     public Guid CreatedByUserId { get; set; }
     public Guid? AssigneeUserId { get; set; }

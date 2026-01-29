@@ -4,6 +4,7 @@ import type {
   CreateOrganizationResponse,
   GetManyOrganizationsResponse,
   UpdateOrganizationRequest,
+  DeleteOrganizationRequest,
 } from "./organization.types.ts";
 import type { OrganizationModel } from "src/organization-module/models/organization.ts";
 
@@ -13,12 +14,15 @@ class OrganizationApiService {
   }
 
   getOrganizationById(organizationId: string) {
-    return appHttpClient.get<OrganizationModel>(`/tenants/${organizationId}`).send();
+    return appHttpClient
+      .get<OrganizationModel>("/tenants/:tenantId")
+      .setRouteParams({ tenantId: organizationId })
+      .send();
   }
 
   getOrganizationBySlug(slug: string) {
     return appHttpClient.get<OrganizationModel>(`/tenants/by-slug`)
-        .setRouteParams({ slug: slug })
+        .setSearchParams({ slug: slug })
         .send();
   }
 
@@ -30,8 +34,16 @@ class OrganizationApiService {
 
   updateOrganization(data: UpdateOrganizationRequest) {
     return appHttpClient
-      .put<UpdateOrganizationRequest, CreateOrganizationResponse>(`/tenants/${data.id}`)
+      .put<UpdateOrganizationRequest, CreateOrganizationResponse>("/tenants/:tenantId")
+      .setRouteParams({ tenantId: data.id })
       .send(data);
+  }
+
+  deleteOrganization(data: DeleteOrganizationRequest) {
+    return appHttpClient
+      .delete("/tenants/:tenantId")
+      .setRouteParams({ tenantId: data.id })
+      .send();
   }
 }
 

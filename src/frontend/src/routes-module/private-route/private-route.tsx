@@ -4,6 +4,7 @@ import { Flex } from "@chakra-ui/react";
 import { useAuthStore } from "src/auth-module/store";
 import { useNavigate } from "react-router-dom";
 import { AuthRoutes } from "src/auth-module";
+import { AppHeader } from "src/shared-module/layout/app-header";
 
 export interface IPrivateRouteProps {
   children: React.ReactNode;
@@ -35,8 +36,11 @@ export const PrivateRoute: React.FC<IPrivateRouteProps> = observer(({ children }
       Loading...
     </Flex>
   ) : (
-    <Flex flex="1" className="private-layout">
-      {children}
+    <Flex flex="1" direction="column" className="private-layout">
+      <AppHeader />
+      <Flex flex="1">
+        {children}
+      </Flex>
     </Flex>
   );
 });

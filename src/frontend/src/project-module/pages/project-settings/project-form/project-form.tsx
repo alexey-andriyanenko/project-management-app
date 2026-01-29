@@ -2,54 +2,40 @@
 import { observer } from "mobx-react-lite";
 import {
   Button,
-  createListCollection,
   Field,
   Flex,
   Input,
-  Select,
   Stack,
   Textarea,
 } from "@chakra-ui/react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 
 import type { ProjectFormValues } from "./project-form.types.ts";
 import { useProjectStore } from "src/project-module/store";
 import { toSlug } from "src/shared-module/utils/to-slug/to-slug.ts";
-import { ProjectVisibilityToNameMap } from "src/project-module/models";
 import { useOrganizationStore } from "src/organization-module/store";
 
 export const ProjectForm: React.FC = observer(() => {
   const navigate = useNavigate();
   const organizationStore = useOrganizationStore();
   const projectStore = useProjectStore();
-  const { formState, register, control, watch, handleSubmit, reset } = useForm<ProjectFormValues>({
+  const { formState, register, watch, handleSubmit, reset } = useForm<ProjectFormValues>({
     defaultValues: {
       name: projectStore.currentProject!.name,
       description: projectStore.currentProject!.description,
-      visibility: [projectStore.currentProject!.visibility.toString()],
     },
   });
   const watchedName = watch("name");
-
-  const visibilityOptions = React.useMemo(() => {
-    return createListCollection({
-      items: Object.entries(ProjectVisibilityToNameMap).map(([value, label]) => ({
-        label,
-        value,
-      })),
-    });
-  }, []);
 
   const onSubmit = handleSubmit(async (data) => {
     const slugChanged = projectStore.currentProject!.slug != toSlug(data.name);
 
     await projectStore.updateProject({
       projectId: projectStore.currentProject!.id,
-      organizationId: organizationStore.currentOrganization!.id,
+      tenantId: organizationStore.currentOrganization!.id,
       name: data.name,
       description: data.description,
-      visibility: Number(data.visibility[0]),
     });
 
     reset(data);
@@ -103,45 +89,6 @@ export const ProjectForm: React.FC = observer(() => {
           })}
         />
         <Field.ErrorText>{formState.errors.description?.message}</Field.ErrorText>
-      </Field.Root>
-
-      <Field.Root invalid={!!formState.errors.visibility}>
-        <Field.Label>Visibility</Field.Label>
-        <Controller
-          control={control}
-          rules={{ required: "User is required" }}
-          name="visibility"
-          render={({ field }) => (
-            <Select.Root
-              name={field.name}
-              value={field.value}
-              onValueChange={(item) => field.onChange(item.value)}
-              onInteractOutside={() => field.onBlur()}
-              collection={visibilityOptions}
-            >
-              <Select.HiddenSelect />
-              <Select.Control>
-                <Select.Trigger>
-                  <Select.ValueText placeholder="Select user" />
-                </Select.Trigger>
-                <Select.IndicatorGroup>
-                  <Select.Indicator />
-                </Select.IndicatorGroup>
-              </Select.Control>
-              <Select.Positioner>
-                <Select.Content>
-                  {visibilityOptions.items.map((item) => (
-                    <Select.Item key={item.value} item={item}>
-                      {item.label}
-                      <Select.ItemIndicator />
-                    </Select.Item>
-                  ))}
-                </Select.Content>
-              </Select.Positioner>
-            </Select.Root>
-          )}
-        />
-        <Field.ErrorText>{formState.errors.visibility?.message}</Field.ErrorText>
       </Field.Root>
 
       <Flex alignItems="center" gap={4}>

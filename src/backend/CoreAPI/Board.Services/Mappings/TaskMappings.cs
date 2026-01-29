@@ -13,7 +13,7 @@ public static class TaskMappings
             TenantId = taskEntity.TenantId,
             ProjectId = taskEntity.ProjectId,
             BoardId = taskEntity.BoardId,
-            BoardColumnId = taskEntity.BoardColumnId,
+            BoardColumn = taskEntity.BoardColumn!.ToTaskBoardColumnDto(),
             CreatedByUserId = taskEntity.CreatedByUserId,
             AssignedToUserId = taskEntity.AssigneeUserId,
             Title = taskEntity.Title,
@@ -21,6 +21,15 @@ public static class TaskMappings
             TagIds = taskEntity.Tags.Select(t => t.TagId).ToList(),
             CreatedAt = taskEntity.CreatedAt,
             UpdatedAt = taskEntity.UpdatedAt
+        };
+    }
+    
+    private static TaskBoardColumnDto ToTaskBoardColumnDto(this BoardColumnEntity entity) 
+    {
+        return new TaskBoardColumnDto()
+        {
+            Id = entity.Id,
+            Name = entity.Name
         };
     }
 }

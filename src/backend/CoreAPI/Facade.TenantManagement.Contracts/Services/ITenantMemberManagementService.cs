@@ -10,6 +10,8 @@ public interface ITenantMemberManagementService
     
     public Task<TenantMemberDto> CreateAsync(CreateTenantMemberParameters parameters);
     
+    public Task<TenantMemberDto> RetryTenantMemberCreationFromInvitationAsync(RetryTenantMemberCreationFromInvitationParameters parameters);
+    
     public Task<TenantMemberDto> UpdateAsync(UpdateTenantMemberParameters parameters);
     
     public Task DeleteAsync(DeleteTenantMemberParameters parameters);

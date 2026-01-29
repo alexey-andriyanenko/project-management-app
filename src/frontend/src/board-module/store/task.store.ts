@@ -64,6 +64,20 @@ class TaskStore {
     }
   }
 
+  public updateTaskColumnOptimistically(taskId: string, newColumnId: string) {
+    const index = this._tasks.findIndex((t) => t.id === taskId);
+    
+    if (index > -1) {
+      this._tasks[index] = {
+        ...this._tasks[index],
+        boardColumn: {
+          ...this._tasks[index].boardColumn,
+          id: newColumnId,
+        },
+      };
+    }
+  }
+
   public async deleteTask(data: DeleteTaskRequest) {
     await taskApiService.deleteTask(data);
     this._tasks = this._tasks.filter((t) => t.id !== data.taskId);

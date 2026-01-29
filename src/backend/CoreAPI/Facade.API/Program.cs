@@ -16,15 +16,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 if (builder.Environment.IsProduction())
 {
-    var region = Environment.GetEnvironmentVariable("AWS_REGION") ?? throw new ArgumentNullException("AWS_REGION environment variable is not set");
-    var secretName = Environment.GetEnvironmentVariable("AWS_SECRETS_MANAGER_SECRET_NAME") ?? throw new ArgumentNullException("AWS_SECRETS_MANAGER_SECRET_NAME environment variable is not set");
+    var region = Environment.GetEnvironmentVariable("AWS_REGION") ??
+                 throw new ArgumentNullException("AWS_REGION environment variable is not set");
+    var secretName = Environment.GetEnvironmentVariable("AWS_SECRETS_MANAGER_SECRET_NAME") ??
+                     throw new ArgumentNullException("AWS_SECRETS_MANAGER_SECRET_NAME environment variable is not set");
 
     builder.Configuration.AddAmazonSecretsManager(region, secretName);
 }
 
 var configuration = builder.Configuration;
-
-builder.Services.AddOpenApi();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddCors(options =>
@@ -61,7 +61,7 @@ builder.Services
 
             ValidateLifetime = true,
         };
-        
+
         options.Events = new JwtBearerEvents
         {
             OnForbidden = context =>
@@ -101,7 +101,7 @@ builder.Services
     .AddFacadeProjectManagementControllers()
     .AddFacadeTagManagementControllers()
     .AddFacadeBoardManagementControllers()
-    .AddMvcOptions(options => 
+    .AddMvcOptions(options =>
     {
         var policy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
             .RequireAuthenticatedUser()
@@ -123,14 +123,12 @@ builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
-    app.MapOpenApi();
-
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Facade.API v1");
-        c.RoutePrefix = string.Empty;
-    });
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Facade.API v1");
+    c.RoutePrefix = string.Empty;
+});
 
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();

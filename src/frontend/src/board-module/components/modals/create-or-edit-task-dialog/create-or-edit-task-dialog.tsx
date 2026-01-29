@@ -3,12 +3,18 @@ import { observer } from "mobx-react-lite";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button, Dialog, Portal, Tabs } from "@chakra-ui/react";
 import { LuMessageCircle, LuSettings } from "react-icons/lu";
+import type { JSONContent } from "@tiptap/react";
 
 import type { ModalsPropsBase } from "src/modals-module";
 import type { BoardColumnModel, BoardModel, TaskModel } from "src/board-module/models";
 import type { TaskFormValues } from "./create-or-edit-task-dialog.types.ts";
 import { TaskDetailsForm } from "./task-details-form";
 import { TaskCommentsForm } from "./task-comments-form";
+
+const EMPTY_EDITOR_CONTENT: JSONContent = {
+  type: "doc",
+  content: [{ type: "paragraph" }],
+};
 
 export type CreateOrEditTaskDialogProps = ModalsPropsBase & {
   board: BoardModel;
@@ -23,10 +29,10 @@ export const CreateOrEditTaskDialog: React.FC<CreateOrEditTaskDialogProps> = obs
     const methods = useForm<TaskFormValues>({
       defaultValues: {
         title: task?.title || "",
-        description: task ? JSON.parse(task.description) : {},
+        description: task ? JSON.parse(task.description) : EMPTY_EDITOR_CONTENT,
         boardColumnId: task ? [task.boardColumn.id] : [boardColumn.id],
-        assigneeId: task?.assignedTo ? [task.assignedTo.id] : [],
-        tagIds: task ? task.tags.map((tag) => tag.id) : [],
+        assigneeId: task?.assignedTo ? [task.assignedTo.userId] : [],
+        tagIds: task ? task.tags.map((tag) => tag.tagId) : [],
       },
     });
 

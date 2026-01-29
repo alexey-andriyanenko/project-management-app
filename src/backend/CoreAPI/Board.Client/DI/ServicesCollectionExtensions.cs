@@ -10,7 +10,9 @@ public static class ServicesCollectionExtensions
 {
     public static IServiceCollection AddBoardClientServices(this IServiceCollection services)
     {
-        services.AddScoped<IBoardResource, BoardResource>();       
+        services.AddScoped<IBoardResource, BoardResource>();
+        services.AddScoped<IBoardColumnResource, BoardColumnResource>();
+        services.AddScoped<IBoardTypeResource, BoardTypeResource>();
         services.AddScoped<ITaskResource, TaskResource>();
         services.AddScoped<IBoardClient, BoardClient>();
         

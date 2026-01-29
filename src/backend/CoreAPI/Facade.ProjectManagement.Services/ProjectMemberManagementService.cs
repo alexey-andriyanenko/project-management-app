@@ -52,6 +52,23 @@ public class ProjectMemberManagementService(
         }
     }
     
+    public async Task<CreateManyProjectMembersResult> CreateManyAsync(CreateManyProjectMembersParameters parameters)
+    {
+        try
+        {
+            var coreResult = await projectClient.ProjectMemberResource.CreateManyAsync(parameters.ToCoreParameters());
+            var enrichedMembers = await EnrichProjectMembers(coreResult.ProjectMembers);
+            return new CreateManyProjectMembersResult
+            {
+                ProjectMembers = enrichedMembers
+            };
+        }
+        catch (Project.Contracts.Exceptions.ProjectNotFoundException)
+        {
+            throw new Facade.ProjectManagement.Contracts.Exceptions.ProjectNotFoundException(parameters.ProjectId);
+        }
+    }
+    
     public async Task<ProjectMemberDto> UpdateAsync(UpdateProjectMemberParameters parameters)
     {
         try

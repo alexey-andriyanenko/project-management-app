@@ -6,6 +6,7 @@ public static class ProjectParametersMappings
     {
         return new Project.Contracts.Parameters.Project.GetManyProjectsByTenantIdParameters
         {
+            UserId = parameters.UserId,
             TenantId = parameters.TenantId
         };
     }
@@ -24,6 +25,7 @@ public static class ProjectParametersMappings
     {
         return new Project.Contracts.Parameters.Project.GetProjectByIdParameters
         {
+            UserId = parameters.UserId,
             TenantId = parameters.TenantId,
             ProjectId = parameters.ProjectId
         };
@@ -33,6 +35,7 @@ public static class ProjectParametersMappings
     {
         return new Project.Contracts.Parameters.Project.CreateProjectParameters
         {
+            UserId = parameters.UserId,
             TenantId = parameters.TenantId,
             Name = parameters.Name,
             Description = parameters.Description,
@@ -53,6 +56,7 @@ public static class ProjectParametersMappings
     {
         return new Project.Contracts.Parameters.Project.UpdateProjectParameters
         {
+            UserId = parameters.UserId,
             TenantId = parameters.TenantId,
             ProjectId = parameters.ProjectId,
             Name = parameters.Name,
@@ -64,6 +68,7 @@ public static class ProjectParametersMappings
     {
         return new Project.Contracts.Parameters.Project.DeleteProjectParameters
         {
+            UserId = parameters.UserId,
             TenantId = parameters.TenantId,
             ProjectId = parameters.ProjectId
         };

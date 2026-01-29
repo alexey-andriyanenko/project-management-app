@@ -18,9 +18,9 @@ import {
 import { observer } from "mobx-react-lite";
 
 import {
+  ProjectUserRole,
   ProjectUserRoleToNameMap,
   ProjectVisibility,
-  ProjectVisibilityToNameMap,
 } from "src/project-module/models";
 import type { ModalsPropsBase } from "src/modals-module";
 import { organizationUserApiService } from "src/organization-module/api";
@@ -79,16 +79,16 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = observer(
 
     React.useEffect(() => {
       organizationUserApiService
-        .getManyOrganizationUsers({ organizationId: organization.id })
+        .getManyOrganizationUsers({ tenantId: organization.id })
         .then((response) => {
-          setUsers(response.users);
+          setUsers(response.tenantMembers);
           setUserOptions(
             createListCollection({
-              items: response.users
-                .filter((user) => user.id !== authStore.currentUser!.id)
+              items: response.tenantMembers
+                .filter((user) => user.userId !== authStore.currentUser!.id)
                 .map((x) => ({
                   label: `${x.firstName} ${x.lastName}`,
-                  value: x.id,
+                  value: x.userId,
                 })),
             }),
           );
@@ -97,8 +97,6 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = observer(
     }, [authStore.currentUser, organization.id]);
 
     React.useEffect(() => {
-      console.log("watchedUsers", watchedUsers);
-
       const addedFormUserIds = watchedUsers.map((user) => user.userId[0]).filter((id) => !!id);
 
       setFilteredUserOptions(
@@ -117,15 +115,6 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = observer(
       append({ userId: [], role: [] });
     };
 
-    const visibilityOptions = React.useMemo(() => {
-      return createListCollection({
-        items: Object.entries(ProjectVisibilityToNameMap).map(([value, label]) => ({
-          label,
-          value,
-        })),
-      });
-    }, []);
-
     return (
       <Dialog.Root lazyMount placement="center" open={isOpen}>
         <Portal>
@@ -140,6 +129,7 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = observer(
                   <Field.Root invalid={!!formState.errors.name}>
                     <Field.Label>Project Name</Field.Label>
                     <Input
+                      placeholder="Enter project name"
                       {...register("name", {
                         required: {
                           value: true,
@@ -167,6 +157,7 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = observer(
                   <Field.Root invalid={!!formState.errors.description}>
                     <Field.Label>Project Description</Field.Label>
                     <Textarea
+                      placeholder="Enter project description"
                       {...register("description", {
                         maxLength: {
                           value: 250,
@@ -177,49 +168,30 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = observer(
                     <Field.ErrorText>{formState.errors.description?.message}</Field.ErrorText>
                   </Field.Root>
 
-                  <Field.Root invalid={!!formState.errors.visibility}>
-                    <Field.Label>Visibility</Field.Label>
-                    <Controller
-                      control={control}
-                      rules={{ required: "User is required" }}
-                      name="visibility"
-                      render={({ field }) => (
-                        <Select.Root
-                          name={field.name}
-                          value={field.value}
-                          onValueChange={(item) => field.onChange(item.value)}
-                          onInteractOutside={() => field.onBlur()}
-                          collection={visibilityOptions}
-                        >
-                          <Select.HiddenSelect />
-                          <Select.Control>
-                            <Select.Trigger>
-                              <Select.ValueText placeholder="Select user" />
-                            </Select.Trigger>
-                            <Select.IndicatorGroup>
-                              <Select.Indicator />
-                            </Select.IndicatorGroup>
-                          </Select.Control>
-                          <Select.Positioner>
-                            <Select.Content>
-                              {visibilityOptions.items.map((item) => (
-                                <Select.Item key={item.value} item={item}>
-                                  {item.label}
-                                  <Select.ItemIndicator />
-                                </Select.Item>
-                              ))}
-                            </Select.Content>
-                          </Select.Positioner>
-                        </Select.Root>
-                      )}
-                    />
-                    <Field.ErrorText>{formState.errors.visibility?.message}</Field.ErrorText>
-                  </Field.Root>
-
                   {loadingUsers ? (
                     <Box>Loading users...</Box>
                   ) : (
                     <Stack gap={4}>
+                      <Flex gap={2} alignItems="flex-start">
+                        <Field.Root>
+                          <Field.Label>User</Field.Label>
+                          <Input
+                            value={`${authStore.currentUser?.firstName} ${authStore.currentUser?.lastName}`}
+                            readOnly
+                            disabled
+                          />
+                        </Field.Root>
+
+                        <Field.Root>
+                          <Field.Label>Role</Field.Label>
+                          <Input
+                            value={ProjectUserRoleToNameMap[ProjectUserRole.Owner]}
+                            readOnly
+                            disabled
+                          />
+                        </Field.Root>
+                      </Flex>
+
                       {fields.map((field, index) => (
                         <Flex gap={2} alignItems="flex-start" key={field.id}>
                           <Field.Root invalid={!!formState.errors.users?.[index]?.userId}>
@@ -234,7 +206,7 @@ export const CreateProjectDialog: React.FC<CreateProjectDialogProps> = observer(
                                   value={field.value}
                                   onValueChange={(item) => field.onChange(item.value)}
                                   onInteractOutside={() => field.onBlur()}
-                                  collection={userOptions}
+                                  collection={filteredUserOptions}
                                 >
                                   <Select.HiddenSelect />
                                   <Select.Control>

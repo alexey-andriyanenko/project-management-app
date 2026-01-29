@@ -10,7 +10,7 @@ public class TaskDto
     
     public Guid BoardId { get; set; }
     
-    public Guid BoardColumnId { get; set; }
+    public required TaskBoardColumnDto BoardColumn { get; set; }
     
     public Guid CreatedByUserId { get; set; }
     
@@ -25,4 +25,11 @@ public class TaskDto
     public DateTime CreatedAt { get; set; }
     
     public DateTime? UpdatedAt { get; set; }
+}
+
+public class TaskBoardColumnDto
+{
+    public Guid Id { get; set; }
+    
+    public required string Name { get; set; }
 }

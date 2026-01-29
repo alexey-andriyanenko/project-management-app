@@ -16,4 +16,21 @@ public static class Mappings
             UserName = entity.UserName!,
         };
     }
+    
+    public static UserInvitationDto ToDto(this UserInvitationEntity entity, string invitationLink)
+    {
+        return new UserInvitationDto()
+        {
+            Id = entity.Id,
+            TenantId = entity.TenantId,
+            Email = entity.Email,
+            FirstName = entity.FirstName,
+            LastName = entity.LastName,
+            TenantMemberRole = entity.TenantMemberRole.ToString(),
+            InvitationLink = invitationLink,
+            ExpiresAt = entity.ExpiresAt,
+            CreatedAt = entity.CreatedAt,
+            AcceptedAt = entity.AcceptedAt,
+        };
+    }
 }

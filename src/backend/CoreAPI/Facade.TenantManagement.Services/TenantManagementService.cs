@@ -34,4 +34,9 @@ public class TenantManagementService(Tenant.Client.Contracts.ITenantClient tenan
         var result = await tenantClient.TenantResource.UpdateAsync(parameters.ToCoreParameters());
         return result.ToFacadeDto();
     }
+    
+    public async Task DeleteAsync(DeleteTenantParameters parameters)
+    {
+        await tenantClient.TenantResource.DeleteAsync(parameters.ToCoreParameters());
+    }
 }

@@ -2,7 +2,7 @@
 
 export type TaskFormValues = {
   title: string;
-  description: JSON;
+  description: JSONContent;
   tagIds: string[];
 
   // array because chakra ui select works with arrays

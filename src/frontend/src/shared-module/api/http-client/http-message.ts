@@ -65,7 +65,15 @@ export class HttpMessage<
   public send<T extends Method>(
     body?: T extends "get" | "delete" ? never : RequestBody,
   ): Promise<ResponseBody> {
+    return this._sendRequest(body);
+  }
+
+  private async _sendRequest<T extends Method>(
+    body?: T extends "get" | "delete" ? never : RequestBody,
+    isRetry: boolean = false,
+  ): Promise<ResponseBody> {
     return new Promise((resolve, reject) => {
+      this._request = new XMLHttpRequest();
       this._request.open(this._method, this._url);
 
       this._request.setRequestHeader("Content-Type", "application/json");
@@ -74,6 +82,20 @@ export class HttpMessage<
         this._request.setRequestHeader("Authorization", `Bearer ${HttpClient.accessToken}`);
 
       this._request.onload = async () => {
+        if (this._request.status === 401 && !isRetry) {
+          try {
+            const newToken = await this._handleTokenRefresh();
+            if (newToken) {
+              const retryResult = await this._sendRequest(body, true);
+              resolve(retryResult);
+              return;
+            }
+          } catch (error) {
+            reject(error);
+            return;
+          }
+        }
+
         await Promise.all(
           this._httpClient.interceptors.map((interceptor) => {
             interceptor(this._request);
@@ -106,6 +128,47 @@ export class HttpMessage<
 
       this._request.send(JSON.stringify(body));
     });
+  }
+
+  private async _handleTokenRefresh(): Promise<string | null> {
+    if (HttpClient.isRefreshing) {
+      return HttpClient.addToRefreshQueue();
+    }
+
+    HttpClient.setRefreshing(true);
+
+    try {
+      const newToken = await this._executeTokenRefresh();
+      HttpClient.processRefreshQueue(null, newToken);
+      return newToken;
+    } catch (error) {
+      HttpClient.processRefreshQueue(error, null);
+      throw error;
+    } finally {
+      HttpClient.setRefreshing(false);
+    }
+  }
+
+  private async _executeTokenRefresh(): Promise<string | null> {
+    const refreshCallback = this._httpClient.onTokenRefresh;
+    
+    if (!refreshCallback) {
+      throw new Error("No token refresh callback configured");
+    }
+
+    const newToken = await refreshCallback();
+    
+    if (newToken) {
+      HttpClient.accessToken = newToken;
+      localStorage.setItem("accessToken", newToken);
+    } else {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      window.location.href = "/auth/login";
+      throw new Error("Token refresh failed");
+    }
+
+    return newToken;
   }
 
   private _stringifySearchParams(

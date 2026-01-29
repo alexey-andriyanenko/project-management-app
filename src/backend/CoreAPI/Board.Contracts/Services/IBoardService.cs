@@ -19,4 +19,6 @@ public interface IBoardService
     public Task DeleteManyAsync(DeleteManyBoardsByTenantId parameters, CancellationToken cancellationToken);
     
     public Task DeleteManyAsync(DeleteManyBoardsByProjectId parameters, CancellationToken cancellationToken);
+    
+    public Task SeedBoardTypesForTenantAsync(Guid tenantId, CancellationToken cancellationToken);
 }

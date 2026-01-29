@@ -20,10 +20,10 @@ class BoardApiService {
   async getManyBoards(data: GetManyBoardsRequest): Promise<GetManyBoardsResponse> {
     const res = await appHttpClient
       .get<{ boards: BoardResponseModel[] }>(
-        "/tenants/:organizationId/projects/:projectId/boards",
+        "/tenants/:tenantId/projects/:projectId/boards",
       )
       .setRouteParams({
-        organizationId: data.organizationId,
+        tenantId: data.tenantId,
         projectId: data.projectId,
       })
       .send();
@@ -35,9 +35,9 @@ class BoardApiService {
 
   async getBoardById(data: GetBoardByIdRequest): Promise<GetBoardByIdResponse> {
     const res = await appHttpClient
-      .get<BoardResponseModel>("/tenants/:organizationId/projects/:projectId/boards/:boardId")
+      .get<BoardResponseModel>("/tenants/:tenantId/projects/:projectId/boards/:boardId")
       .setRouteParams({
-        organizationId: data.organizationId,
+        tenantId: data.tenantId,
         projectId: data.projectId,
         boardId: data.boardId,
       })
@@ -49,10 +49,10 @@ class BoardApiService {
   async createBoard(data: CreateBoardRequest): Promise<CreateBoardResponse> {
     const res = await appHttpClient
       .post<CreateBoardRequest, BoardResponseModel>(
-        "/tenants/:organizationId/projects/:projectId/boards",
+        "/tenants/:tenantId/projects/:projectId/boards",
       )
       .setRouteParams({
-        organizationId: data.organizationId,
+        tenantId: data.tenantId,
         projectId: data.projectId,
       })
       .send(data);
@@ -63,10 +63,10 @@ class BoardApiService {
   async updateBoard(data: UpdateBoardRequest): Promise<UpdateBoardResponse> {
     const res = await appHttpClient
       .put<UpdateBoardRequest, BoardResponseModel>(
-        "/tenants/:organizationId/projects/:projectId/boards/:boardId",
+        "/tenants/:tenantId/projects/:projectId/boards/:boardId",
       )
       .setRouteParams({
-        organizationId: data.organizationId,
+        tenantId: data.tenantId,
         projectId: data.projectId,
         boardId: data.boardId,
       })
@@ -77,9 +77,9 @@ class BoardApiService {
 
   async deleteBoard(data: GetBoardByIdRequest): Promise<void> {
     await appHttpClient
-      .delete<void>("/tenants/:organizationId/projects/:projectId/boards/:boardId")
+      .delete<void>("/tenants/:tenantId/projects/:projectId/boards/:boardId")
       .setRouteParams({
-        organizationId: data.organizationId,
+        tenantId: data.tenantId,
         projectId: data.projectId,
         boardId: data.boardId,
       })
@@ -89,10 +89,10 @@ class BoardApiService {
   async getBoardTypes(data: GetManyBoardTypesRequest): Promise<GetManyBoardTypesResponse> {
     const res = await appHttpClient
       .get<{ boardTypes: BoardTypeResponseModel[] }>(
-        "/tenants/:organizationId/projects/:projectId/boards/types",
+        "/tenants/:tenantId/board-types",
       )
       .setRouteParams({
-        organizationId: data.organizationId,
+        tenantId: data.tenantId,
         projectId: data.projectId,
       })
       .send();

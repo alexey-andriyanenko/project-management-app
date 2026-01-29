@@ -13,4 +13,6 @@ public interface ITenantManagementService
     public Task<TenantDto> CreateAsync(CreateTenantParameters parameters);
     
     public Task<TenantDto> UpdateAsync(UpdateTenantParameters parameters);
+    
+    public Task DeleteAsync(DeleteTenantParameters parameters);
 }

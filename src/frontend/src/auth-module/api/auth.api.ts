@@ -7,11 +7,14 @@ import type {
   RefreshTokenResponse,
   RegisterRequest,
   RegisterResponse,
+  UpdateUserRequest,
+  UpdateUserResponse,
 } from "./auth.types";
 import type { UserModel } from "src/auth-module/models";
 
 class AuthApiService {
   login(data: LoginRequest) {
+    console.log(import.meta.env);
     return appHttpClient.post<LoginRequest, LoginResponse>("/auth/login").send(data);
   }
 
@@ -27,6 +30,10 @@ class AuthApiService {
 
   getMe() {
     return appHttpClient.get<UserModel>("/users/me").send();
+  }
+
+  updateMe(data: UpdateUserRequest) {
+    return appHttpClient.put<UpdateUserRequest, UpdateUserResponse>("/users/me").send(data);
   }
 }
 

@@ -29,4 +29,51 @@ public class BoardDbContext(DbContextOptions<BoardDbContext> options) : DbContex
 
         base.OnModelCreating(builder);
     }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSeeding((context, _) =>
+        {
+            var boardTypesContext = context.Set<BoardTypeEntity>();
+
+            if (boardTypesContext.Any())
+            {
+                return;
+            }
+            
+            var defaultBoardTypes = new List<BoardTypeEntity>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Kanban",
+                    IsEssential = true,
+                    TenantId = Guid.Empty
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Scrum",
+                    IsEssential = true,
+                    TenantId = Guid.Empty
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Backlog",
+                    IsEssential = true,
+                    TenantId = Guid.Empty
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Custom",
+                    IsEssential = false,
+                    TenantId = Guid.Empty
+                }
+            };
+        });
+        
+        base.OnConfiguring(optionsBuilder);
+    }
 }

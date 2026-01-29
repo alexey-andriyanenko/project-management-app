@@ -1,11 +1,12 @@
 ﻿using Facade.ProjectManagement.Contracts.Services;
 using Microsoft.AspNetCore.Mvc;
+using Shared.ClaimsPrincipal.Extensions;
 
 namespace Facade.ProjectManagement.Controllers;
 
 [ApiController]
 [Route("api/v1/tenants/{tenantId}/projects/{projectId}/members")]
-public class ProjectMemberManagementController(IProjectMemberManagementService projectMemberManagementService)
+public class ProjectMemberManagementController(IProjectMemberManagementService projectMemberManagementService) : ControllerBase
 {
     [HttpGet]
     public async Task<Contracts.Results.GetManyProjectMembersByProjectIdResult> GetManyAsync([FromRoute] Guid tenantId,
@@ -45,6 +46,19 @@ public class ProjectMemberManagementController(IProjectMemberManagementService p
         parameters.TenantId = tenantId;
         parameters.ProjectId = projectId;
         return await projectMemberManagementService.CreateAsync(parameters);
+    }
+    
+    [HttpPost("bulk")]
+    public async Task<Contracts.Results.CreateManyProjectMembersResult> CreateManyAsync(
+        [FromRoute] Guid tenantId,
+        [FromRoute] Guid projectId,
+        [FromBody] Contracts.Parameters.ProjectMember.CreateManyProjectMembersParameters parameters
+    )
+    {
+        parameters.UserId = User.GetUserId();
+        parameters.TenantId = tenantId;
+        parameters.ProjectId = projectId;
+        return await projectMemberManagementService.CreateManyAsync(parameters);
     }
 
     [HttpPut("{id}")]

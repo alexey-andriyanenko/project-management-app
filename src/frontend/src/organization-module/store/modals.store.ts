@@ -3,17 +3,16 @@ import type { ModalsPropsBase, ModalsStoreRegistryGuard } from "src/modals-modul
 
 import type {
   CreateOrEditOrganizationDialogProps,
-  CreateOrEditOrganizationUserDialogProps,
+  CreateUserInvitationDialogProps,
 } from "src/organization-module/components/modals";
 
-export type ModalName = "CreateOrEditOrganizationDialog" | "CreateOrEditOrganizationUserDialog";
+export type ModalName = 
+  | "CreateOrEditOrganizationDialog" 
+  | "CreateUserInvitationDialog";
 
 export interface IModalsStoreRegistry extends ModalsStoreRegistryGuard<ModalName> {
   CreateOrEditOrganizationDialog: Omit<CreateOrEditOrganizationDialogProps, keyof ModalsPropsBase>;
-  CreateOrEditOrganizationUserDialog: Omit<
-    CreateOrEditOrganizationUserDialogProps,
-    keyof ModalsPropsBase
-  >;
+  CreateUserInvitationDialog: Omit<CreateUserInvitationDialogProps, keyof ModalsPropsBase>;
 }
 
 export const modalsStore = ModalsFactory.createStore<ModalName, IModalsStoreRegistry>();

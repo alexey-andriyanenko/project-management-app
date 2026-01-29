@@ -6,5 +6,9 @@ public interface IBoardClient
 {
     public IBoardResource BoardResource { get; }
     
+    public IBoardColumnResource BoardColumnResource { get; }
+    
+    public IBoardTypeResource BoardTypeResource { get; }
+    
     public ITaskResource TaskResource { get; }
 }

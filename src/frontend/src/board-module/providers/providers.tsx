@@ -17,7 +17,7 @@ export const Providers: React.FC<React.PropsWithChildren> = observer(({ children
 
     boardStore
       .fetchBoardTypes({
-        organizationId: organizationStore.currentOrganization!.id,
+        tenantId: organizationStore.currentOrganization!.id,
         projectId: projectStore.currentProject!.id,
       })
       .catch((error) => {

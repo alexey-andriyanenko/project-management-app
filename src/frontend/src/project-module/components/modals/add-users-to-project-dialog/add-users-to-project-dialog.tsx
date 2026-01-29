@@ -77,14 +77,14 @@ export const AddUsersToProjectDialog: React.FC<AddUsersToProjectDialogProps> = (
 
   React.useEffect(() => {
     organizationUserApiService
-      .getManyOrganizationUsers({ organizationId: organization.id })
+      .getManyOrganizationUsers({ tenantId: organization.id })
       .then((response) => {
-        setUsers(response.users);
+        setUsers(response.tenantMembers);
         setUserOptions(
           createListCollection({
-            items: response.users.map((x) => ({
+            items: response.tenantMembers.map((x) => ({
               label: `${x.firstName} ${x.lastName}`,
-              value: x.id,
+              value: x.userId,
             })),
           }),
         );
@@ -98,7 +98,7 @@ export const AddUsersToProjectDialog: React.FC<AddUsersToProjectDialogProps> = (
     const addedFormUserIds = watchedUsers
       .map((user) => user.userId?.[0])
       .filter((id): id is string => !!id);
-    const addedUserIds = addedUsers.map((user) => user.id);
+    const addedUserIds = addedUsers.map((user) => user.userId);
 
     const ids = [...addedFormUserIds, ...addedUserIds];
 

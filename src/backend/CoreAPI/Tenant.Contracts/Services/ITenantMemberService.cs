@@ -8,6 +8,8 @@ public interface ITenantMemberService
 {
     public Task<GetManyTenantMembersByTenantIdResult> GetManyAsync(GetManyTenantMembersByTenantIdParameters parameters);
     
+    public Task<TenantMemberDto> GetAsync(GetTenantMemberParameters parameters);
+    
     public Task<TenantMemberDto> CreateAsync(CreateTenantMemberParameters parameters);
     
     public Task<TenantMemberDto> UpdateAsync(UpdateTenantMemberParameters parameters);

@@ -6,10 +6,17 @@ type HttpClientConfig = {
   baseUrl: string;
   anonymous?: boolean;
   interceptors?: HttpClientInterceptor[];
+  onTokenRefresh?: () => Promise<string | null>;
 };
 
 export class HttpClient {
   private _config: HttpClientConfig;
+  private static _isRefreshing = false;
+  private static _refreshQueue: Array<{
+    resolve: (token: string | null) => void;
+    reject: (error: object) => void;
+    onTokenRefresh: (() => Promise<string | null>) | null;
+  }> = [];
 
   constructor(_config: HttpClientConfig) {
     this._config = _config;
@@ -19,8 +26,37 @@ export class HttpClient {
 
   public static refreshToken = localStorage.getItem("refreshToken");
 
+  public static get isRefreshing(): boolean {
+    return HttpClient._isRefreshing;
+  }
+
+  public static setRefreshing(value: boolean): void {
+    HttpClient._isRefreshing = value;
+  }
+
+  public static addToRefreshQueue(): Promise<string | null> {
+    return new Promise((resolve, reject) => {
+      HttpClient._refreshQueue.push({ resolve, reject, onTokenRefresh: null });
+    });
+  }
+
+  public static processRefreshQueue(error: unknown = null, token: string | null = null): void {
+    HttpClient._refreshQueue.forEach(({ resolve, reject }) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(token);
+      }
+    });
+    HttpClient._refreshQueue = [];
+  }
+
   public get interceptors(): HttpClientInterceptor[] {
     return this._config.interceptors ?? [];
+  }
+
+  public get onTokenRefresh(): (() => Promise<string | null>) | undefined {
+    return this._config.onTokenRefresh;
   }
 
   public get<Response, Path extends string = string>(url: Path) {

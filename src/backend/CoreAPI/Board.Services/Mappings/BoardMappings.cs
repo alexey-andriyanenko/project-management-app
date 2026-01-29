@@ -15,12 +15,13 @@ public static class BoardMappings
             CreatedByUserId = entity.CreatedByUserId,
             CreatedAt = entity.CreatedAt,
             UpdatedAt = entity.UpdatedAt,
+            Name = entity.Name,
             Type = entity.BoardType!.ToDto(),
             Columns = entity.Columns.Select(c => c.ToDto()).ToList(),
         };
     }
 
-    private static BoardColumnDto ToDto(this BoardColumnEntity entity)
+    public static BoardColumnDto ToDto(this BoardColumnEntity entity)
     {
         return new BoardColumnDto()
         {

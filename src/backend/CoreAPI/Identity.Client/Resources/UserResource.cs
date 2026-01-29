@@ -11,6 +11,9 @@ public class UserResource(IUserService userService) : IUserResource
     public Task<UserDto> GetAsync(GetUserByIdParameters parameters)
         => userService.GetAsync(parameters);
     
+    public Task<UserDto?> GetByEmailAsync(GetUserByEmailParameters parameters)
+        => userService.GetByEmailAsync(parameters);
+    
     public Task<GetManyUsersByIdResults> GetManyAsync(GetManyUsersByIdsParameters parameters)
         => userService.GetManyAsync(parameters);
     

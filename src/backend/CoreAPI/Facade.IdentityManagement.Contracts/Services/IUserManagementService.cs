@@ -9,8 +9,4 @@ public interface IUserManagementService
     public Task<UserDto> GetAsync(GetUserByIdParameters parameters);
     
     public Task<GetManyUsersByIdResult> GetManyAsync(GetManyUsersByIdsParameters parameters);
-    
-    public Task<UserDto> CreateAsync(CreateUserParameters parameters);
-    
-    public Task<UserDto> UpdateAsync(UpdateUserParameters parameters);
 }

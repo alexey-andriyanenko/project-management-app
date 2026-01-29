@@ -1,18 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.EventBus.Contracts;
+using Microsoft.EntityFrameworkCore;
 using Project.Contracts.Dtos;
 using Project.Contracts.Exceptions;
-using Project.Contracts.Parameters;
 using Project.Contracts.Parameters.Project;
 using Project.Contracts.Result;
 using Project.Contracts.Service;
 using Project.DataAccess;
 using Project.DataAccess.Entities;
+using Project.Events.Contracts;
 using Project.Services.Mappings;
 using Shared.String.Extensions;
 
 namespace Project.Services;
 
-public class ProjectService(ProjectDbContext dbContext) : IProjectService
+public class ProjectService(ProjectDbContext dbContext, IEventBus eventBus) : IProjectService
 {
     public async Task<ProjectDto> GetAsync(GetProjectByIdParameters parameters)
     {
@@ -28,7 +29,10 @@ public class ProjectService(ProjectDbContext dbContext) : IProjectService
 
     public async Task<ProjectDto> GetAsync(GetProjectBySlugParameters parameters)
     {
-        var project = await dbContext.Projects.FirstOrDefaultAsync(x => x.TenantId == parameters.TenantId && x.Slug == parameters.Slug);
+        var project = await dbContext.Projects
+            .AsNoTracking()
+            .Include(x => x.Members)
+            .FirstOrDefaultAsync(x => x.TenantId == parameters.TenantId && x.Slug == parameters.Slug);
         if (project == null)
         {
             throw new ProjectNotFoundException(parameters.Slug);
@@ -45,10 +49,25 @@ public class ProjectService(ProjectDbContext dbContext) : IProjectService
 
     public async Task<GetManyProjectsByTenantIdResult> GetManyAsync(GetManyProjectsByTenantIdParameters parameters)
     {
-        var projects = await dbContext.Projects
-            .Where(x => x.TenantId == parameters.TenantId)
+        var projectIds = await dbContext.ProjectMembers
+            .AsNoTracking()
+            .Where(x => x.UserId == parameters.UserId)
+            .Select(x => x.ProjectId)
             .ToListAsync();
 
+        if (!projectIds.Any())
+        {
+            return new GetManyProjectsByTenantIdResult
+            {
+                Projects = new List<ProjectDto>()
+            };
+        }
+        
+        var projects = await dbContext.Projects
+            .AsNoTracking()
+            .Where(x => x.TenantId == parameters.TenantId && projectIds.Contains(x.Id))
+            .ToListAsync();
+        
         return new GetManyProjectsByTenantIdResult
         {
             Projects = projects.Select(x => x.ToDto()).ToList()
@@ -57,6 +76,11 @@ public class ProjectService(ProjectDbContext dbContext) : IProjectService
     
     public async Task<ProjectDto> CreateAsync(CreateProjectParameters parameters)
     {
+        if (parameters.Members.Any(m => m.UserId == parameters.UserId))
+        {
+            throw new ArgumentException("The project owner cannot be added as a member.");
+        }
+        
         var projectId = Guid.NewGuid();
         var project = new ProjectEntity() 
         {
@@ -65,16 +89,36 @@ public class ProjectService(ProjectDbContext dbContext) : IProjectService
             Name = parameters.Name,
             Description = parameters.Description,
             Slug = parameters.Name.ToSlug(),
-            Members = parameters.Members.Select(x => new ProjectMemberEntity()
-            {
-                ProjectId = projectId,
-                UserId = x.UserId,
-                Role = (DataAccess.Enums.ProjectMemberRole)x.Role,
-            }).ToList(),
         };
+
+        project.Members.Add(new ProjectMemberEntity()
+        {
+            UserId = parameters.UserId,
+            ProjectId = projectId,
+            Role = DataAccess.Enums.ProjectMemberRole.Owner
+        });
+        
+        if (project.Members.Count > 0)
+        {
+            foreach (var member in parameters.Members)
+            {
+                project.Members.Add(new ProjectMemberEntity()
+                {
+                    UserId = member.UserId,
+                    ProjectId = projectId,
+                    Role = (DataAccess.Enums.ProjectMemberRole)member.Role
+                });
+            }
+        }
         
         dbContext.Projects.Add(project);
         await dbContext.SaveChangesAsync();
+
+        await eventBus.PublishAsync(new ProjectCreatedEvent()
+        {
+            ProjectId = project.Id,
+            TenantId = project.TenantId,
+        });
 
         return project.ToDto();
     }

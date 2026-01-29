@@ -40,7 +40,7 @@ export const CreateOrEditBoardDialog: React.FC<CreateOrEditBoardDialogProps> = o
       defaultValues: {
         name: board?.name || "",
         typeId: board?.type ? [board.type.id.toString()] : [""],
-        columns: board?.columns.map((col) => ({ id: col.id, name: col.name })) ?? [{ name: "" }],
+        columns: board?.columns.map((col) => ({ id: col.id, name: col.name })) ?? [],
       },
     });
     const { fields, append, remove } = useFieldArray({
@@ -147,7 +147,7 @@ export const CreateOrEditBoardDialog: React.FC<CreateOrEditBoardDialogProps> = o
                             <Select.HiddenSelect />
                             <Select.Control>
                               <Select.Trigger>
-                                <Select.ValueText placeholder="Select role" />
+                                <Select.ValueText placeholder="Select board type" />
                               </Select.Trigger>
                               <Select.IndicatorGroup>
                                 <Select.Indicator />

@@ -48,7 +48,8 @@ public static class ParametersMappings
         return new Tag.Contracts.Parameters.DeleteTagParameters
         {
             Id = parameters.Id,
-            TenantId = parameters.TenantId
+            TenantId = parameters.TenantId,
+            ProjectId = parameters.ProjectId
         };
     }
 }

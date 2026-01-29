@@ -29,17 +29,4 @@ public class UserManagementController(IUserManagementService userManagementServi
             Ids = parameters.Ids
         });
     }
-
-    [HttpPost]
-    public async Task<UserDto> CreateAsync([FromBody] CreateUserParameters parameters)
-    {
-        return await userManagementService.CreateAsync(parameters);
-    }
-
-    [HttpPut("{userId}")]
-    public async Task<UserDto> UpdateAsync([FromRoute] Guid userId, [FromBody] UpdateUserParameters parameters)
-    {
-        parameters.Id = userId;
-        return await userManagementService.UpdateAsync(parameters);
-    }
 }

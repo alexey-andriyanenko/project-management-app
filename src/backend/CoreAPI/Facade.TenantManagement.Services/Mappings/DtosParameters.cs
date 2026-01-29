@@ -8,7 +8,8 @@ public static class DtosParameters
         {
             Id = dto.Id,
             Name = dto.Name,
-            Slug = dto.Slug
+            Slug = dto.Slug,
+            OwnerUserId = dto.OwnerUserId
         };
     }
     

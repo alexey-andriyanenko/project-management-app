@@ -1,7 +1,8 @@
 import type { OrganizationUserRole } from "./organization-user-role.ts";
 
 export type OrganizationUserModel = {
-  id: string;
+  userId: string;
+  tenantId: string;
   firstName: string;
   lastName: string;
   email: string;

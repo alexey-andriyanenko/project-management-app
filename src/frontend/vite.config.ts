@@ -8,7 +8,13 @@ export default defineConfig({
   plugins: [
       react(),
     checker({
-      typescript: true,
+      typescript: {
+        tsconfigPath: './tsconfig.app.json',
+        buildMode: false,
+      },
+      overlay: true,
+      terminal: true,
+      enableBuild: false,
     }),
   ],
   resolve: {

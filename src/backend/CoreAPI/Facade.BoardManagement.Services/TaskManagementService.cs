@@ -16,7 +16,7 @@ public class TaskManagementService(IBoardClient boardClient, ITagClient tagClien
     public async Task<TaskDto> GetByIdAsync(Contracts.Parameters.Task.GetTaskByIdParameters parameters)
     {
         var task = await boardClient.TaskResource.GetByIdAsync(parameters.ToCoreParameters());
-        var enrichedTasks = await EnrichCoreTaskDtos([task]);
+        var enrichedTasks = await EnrichCoreTaskDtos([task], parameters.TenantId);
         
         return enrichedTasks.First();
     }
@@ -25,7 +25,7 @@ public class TaskManagementService(IBoardClient boardClient, ITagClient tagClien
         Contracts.Parameters.Task.GetManyTasksByBoardIdParameters parameters)
     {
         var result = await boardClient.TaskResource.GetManyAsync(parameters.ToCoreParameters());
-        var enrichedTasks = await EnrichCoreTaskDtos(result.Tasks);
+        var enrichedTasks = await EnrichCoreTaskDtos(result.Tasks, parameters.TenantId);
         
         return new GetManyTasksByBoardIdResult()
         {
@@ -36,7 +36,7 @@ public class TaskManagementService(IBoardClient boardClient, ITagClient tagClien
     public async Task<TaskDto> CreateAsync(Contracts.Parameters.Task.CreateTaskParameters parameters)
     {
         var task = await boardClient.TaskResource.CreateAsync(parameters.ToCoreParameters());
-        var enrichedTasks = await EnrichCoreTaskDtos([task]);
+        var enrichedTasks = await EnrichCoreTaskDtos([task], parameters.TenantId);
         
         return enrichedTasks.First();
     }
@@ -45,7 +45,7 @@ public class TaskManagementService(IBoardClient boardClient, ITagClient tagClien
     {
         var task = await boardClient.TaskResource.UpdateAsync(parameters.ToCoreParameters());
         
-        var enrichedTasks = await EnrichCoreTaskDtos([task]);
+        var enrichedTasks = await EnrichCoreTaskDtos([task], parameters.TenantId);
         return enrichedTasks.First();
     }
 
@@ -55,7 +55,7 @@ public class TaskManagementService(IBoardClient boardClient, ITagClient tagClien
     }
 
 
-    private async Task<IReadOnlyList<TaskDto>> EnrichCoreTaskDtos(IReadOnlyList<Board.Contracts.Dtos.TaskDto> tasks)
+    private async Task<IReadOnlyList<TaskDto>> EnrichCoreTaskDtos(IReadOnlyList<Board.Contracts.Dtos.TaskDto> tasks, Guid tenantId)
     {
         var allUserIds = tasks
             .SelectMany(t =>
@@ -71,9 +71,10 @@ public class TaskManagementService(IBoardClient boardClient, ITagClient tagClien
             })
             .Distinct()
             .ToList();
-
+        
         var tagsTask = tagClient.TagResource.GetManyAsync(new GetManyTagsByIdsParameters()
         {
+            TenantId = tenantId,
             TagIds = tasks.SelectMany(t => t.TagIds).Distinct().ToList()
         });
         var usersTask = identityClient.UserResource.GetManyAsync(new GetManyUsersByIdsParameters()
@@ -83,15 +84,16 @@ public class TaskManagementService(IBoardClient boardClient, ITagClient tagClien
 
         await Task.WhenAll(tagsTask, usersTask);
 
-        var tags = tagsTask.Result.Tags;
+        var tags = tagsTask.Result.Tags.ToDictionary(tag => tag.Id, tag => tag);
         var users = usersTask.Result.Users.ToDictionary(u => u.Id, u => u);
-
+        
         var taskDtos = tasks.Select(t =>
         {
             var createdByUser = users[t.CreatedByUserId];
             var assignedToUser = t.AssignedToUserId.HasValue ? users[t.AssignedToUserId.Value] : null;
+            var taskTags = t.TagIds.Select(tagId => tags[tagId]).ToList();
 
-            return t.ToFacadeDto(tags, createdByUser, assignedToUser);
+            return t.ToFacadeDto(taskTags, createdByUser, assignedToUser);
         }).ToList();
 
         return taskDtos;

@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { Box } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useModalsStore, useOrganizationStore } from "../../store";
+import { useModalsStore as useSharedModalsStore } from "src/shared-module/store/modals";
 import { OrganizationCard } from "./organization-card";
 import type { OrganizationModel } from "../../models/organization.ts";
 import { AddOrganizationCard } from "./add-organization-card";
@@ -11,6 +12,7 @@ const OrganizationSelection: React.FC = observer(() => {
   const navigate = useNavigate();
   const organizationStore = useOrganizationStore();
   const modalsStore = useModalsStore();
+  const sharedModalsStore = useSharedModalsStore();
   const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
@@ -42,6 +44,17 @@ const OrganizationSelection: React.FC = observer(() => {
     });
   };
 
+  const handleDelete = (organization: OrganizationModel) => {
+    sharedModalsStore.open("ConfirmImportantModal", {
+      title: "Are you sure you want to delete this organization?",
+      confirmText: "delete organization",
+      description: `This action cannot be undone. Organization: ${organization.name}`,
+      onConfirm: async () => {
+        await organizationStore.deleteOrganization({ id: organization.id });
+      },
+    });
+  };
+
   return (
     <Box
       flex="1"
@@ -61,6 +74,7 @@ const OrganizationSelection: React.FC = observer(() => {
               key={organization.id}
               organization={organization}
               onSelect={handleSelect}
+              onDelete={handleDelete}
             />
           ))}
 

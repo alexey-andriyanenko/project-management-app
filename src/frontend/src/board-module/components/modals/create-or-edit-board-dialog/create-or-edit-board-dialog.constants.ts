@@ -4,13 +4,12 @@ export const scrumDefaultBoardColumns: string[] = [
   "To Do",
   "In Progress",
   "In Review",
-  "In Testing",
   "Done",
 ];
 
-export const kanbanDefaultBoardColumns: string[] = ["To Do", "In Progress", "Done"];
+export const kanbanDefaultBoardColumns: string[] = ["Backlog", "To Do", "In Progress", "Done"];
 
-export const backlogDefaultBoardColumns: string[] = ["Backlog"];
+export const backlogDefaultBoardColumns: string[] = [];
 
 export const boardTypeOptions = createListCollection({
   items: [

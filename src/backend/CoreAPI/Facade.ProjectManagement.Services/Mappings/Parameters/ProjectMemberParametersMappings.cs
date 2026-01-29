@@ -32,6 +32,19 @@ public static class ProjectMemberParametersMappings
         };
     }
     
+    public static Project.Contracts.Parameters.ProjectMember.CreateManyProjectMembersParameters ToCoreParameters(this Facade.ProjectManagement.Contracts.Parameters.ProjectMember.CreateManyProjectMembersParameters parameters)
+    {
+        return new Project.Contracts.Parameters.ProjectMember.CreateManyProjectMembersParameters
+        {
+            ProjectId = parameters.ProjectId,
+            Members = parameters.Members.Select(m => new Project.Contracts.Parameters.ProjectMember.CreateProjectMemberItemParameters
+            {
+                UserId = m.UserId,
+                Role = (Project.Contracts.Dtos.ProjectMemberRole)m.Role
+            }).ToList()
+        };
+    }
+    
     public static Project.Contracts.Parameters.ProjectMember.UpdateProjectMemberParameters ToCoreParameters(this Facade.ProjectManagement.Contracts.Parameters.ProjectMember.UpdateProjectMemberParameters parameters)
     {
         return new Project.Contracts.Parameters.ProjectMember.UpdateProjectMemberParameters

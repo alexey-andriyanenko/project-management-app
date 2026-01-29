@@ -4,6 +4,7 @@ import { organizationApiService } from "../api/organization.api.ts";
 import type {
   CreateOrganizationRequest,
   UpdateOrganizationRequest,
+  DeleteOrganizationRequest,
 } from "src/organization-module/api";
 
 class OrganizationStore {
@@ -68,6 +69,18 @@ class OrganizationStore {
       if (index !== -1) {
         this._organizations[index] = res;
       }
+    });
+  }
+
+  public async deleteOrganization(data: DeleteOrganizationRequest): Promise<void> {
+    await organizationApiService.deleteOrganization(data);
+
+    runInAction(() => {
+      if (this._currentOrganization?.id === data.id) {
+        this._currentOrganization = null;
+      }
+
+      this._organizations = this._organizations.filter((org) => org.id !== data.id);
     });
   }
 }

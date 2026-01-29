@@ -16,6 +16,9 @@ public class ProjectMemberResource(IProjectMemberService projectMemberService) :
     public Task<ProjectMemberDto> CreateAsync(Project.Contracts.Parameters.ProjectMember.CreateProjectMemberParameters parameters)
         => projectMemberService.CreateAsync(parameters);
     
+    public Task<CreateManyProjectMembersResult> CreateManyAsync(Project.Contracts.Parameters.ProjectMember.CreateManyProjectMembersParameters parameters)
+        => projectMemberService.CreateManyAsync(parameters);
+    
     public Task<ProjectMemberDto> UpdateAsync(Project.Contracts.Parameters.ProjectMember.UpdateProjectMemberParameters parameters)
         => projectMemberService.UpdateAsync(parameters);
     

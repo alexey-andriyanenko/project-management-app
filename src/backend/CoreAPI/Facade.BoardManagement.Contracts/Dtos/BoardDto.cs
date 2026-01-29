@@ -10,6 +10,8 @@ public class BoardDto
     
     public Guid CreatedByUserId { get; set; }
     
+    public required string Name { get; set; }
+    
     public required BoardTypeDto Type { get; set; }
     
     public IReadOnlyList<BoardColumnDto> Columns { get; set; } = [];

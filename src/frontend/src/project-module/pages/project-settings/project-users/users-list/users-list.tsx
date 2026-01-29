@@ -36,7 +36,7 @@ export const UsersList: React.FC<UsersListProps> = observer(({ users, onUnassign
 
       <Table.Body>
         {users.map((user) => (
-          <Table.Row key={user.id}>
+          <Table.Row key={user.userId}>
             <Table.Cell>
               <Avatar.Root colorPalette={pickColor(`${user.firstName} ${user.lastName}`)}>
                 <Avatar.Fallback name={`${user.firstName} ${user.lastName}`} />
@@ -52,7 +52,7 @@ export const UsersList: React.FC<UsersListProps> = observer(({ users, onUnassign
             ))}
 
             <Table.Cell>
-              {authStore.currentUser?.id !== user.id && (
+              {authStore.currentUser?.id !== user.userId && (
                 <Button colorPalette="red" onClick={() => handleUnassign(user)}>
                   Unassign
                 </Button>

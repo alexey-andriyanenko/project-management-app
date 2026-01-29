@@ -5,7 +5,7 @@ export type GetTagsResponse = {
 };
 
 export type CreateTagRequest = {
-  organizationId: string;
+  tenantId: string;
   projectId: string;
   name: string;
   color: string;
@@ -14,7 +14,7 @@ export type CreateTagRequest = {
 export type CreateTagResponse = TagModel;
 
 export type UpdateTagRequest = {
-  organizationId: string;
+  tenantId: string;
   tagId: string;
   projectId: string;
   name: string;

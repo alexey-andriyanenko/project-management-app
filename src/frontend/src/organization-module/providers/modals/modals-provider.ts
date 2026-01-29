@@ -6,18 +6,19 @@ import type { IModalsStoreRegistry, ModalName } from "../../store/modals.store.t
 import {
   CreateOrEditOrganizationDialog,
   type CreateOrEditOrganizationDialogProps,
-  CreateOrEditOrganizationUserDialog,
-  type CreateOrEditOrganizationUserDialogProps,
+  CreateUserInvitationDialog,
+  type CreateUserInvitationDialogProps,
 } from "../../components/modals";
 
 interface IModalsProviderRegistry extends ModalsProviderRegistryGuard<ModalName> {
   CreateOrEditOrganizationDialog: React.FC<CreateOrEditOrganizationDialogProps>;
-  CreateOrEditOrganizationUserDialog: React.FC<CreateOrEditOrganizationUserDialogProps>;
+
+  CreateUserInvitationDialog: React.FC<CreateUserInvitationDialogProps>;
 }
 
 const modalsRegistry: IModalsProviderRegistry = {
   CreateOrEditOrganizationDialog: CreateOrEditOrganizationDialog,
-  CreateOrEditOrganizationUserDialog: CreateOrEditOrganizationUserDialog,
+  CreateUserInvitationDialog: CreateUserInvitationDialog,
 };
 
 export const ModalsProvider = ModalsFactory.createProvider<

@@ -1,4 +1,5 @@
 ﻿import {
+  type AddManyUsersToProjectRequest,
   type AddUserToProjectRequest,
   type GetManyProjectUsersByIdsRequest,
   type GetManyProjectUsersRequest,
@@ -24,7 +25,7 @@ class ProjectUserStore {
 
   public async fetchProjectUserById(data: GetProjectUserByIdRequest) {
     const response = await projectUserApiService.getProjectUserById(data);
-    const index = this._users.findIndex((user) => user.id === response.id);
+    const index = this._users.findIndex((user) => user.userId === response.userId);
 
     if (index !== -1) {
       runInAction(() => {
@@ -37,7 +38,7 @@ class ProjectUserStore {
     const response = await projectUserApiService.getManyProjectUsersByIds(data);
 
     for (const user of response.users) {
-      const index = this._users.findIndex((u) => u.id === user.id);
+      const index = this._users.findIndex((u) => u.userId === user.userId);
 
       if (index !== -1) {
         runInAction(() => {
@@ -51,7 +52,7 @@ class ProjectUserStore {
     const response = await projectUserApiService.getManyProjectUsers(data);
 
     runInAction(() => {
-      this._users = response.users;
+      this._users = response.projectMembers;
     });
   }
 
@@ -63,9 +64,17 @@ class ProjectUserStore {
     });
   }
 
+  public async addManyUsersToProject(data: AddManyUsersToProjectRequest) {
+    const response = await projectUserApiService.addManyUsersToProject(data);
+
+    runInAction(() => {
+      this._users = this._users.concat(response.projectMembers);
+    });
+  }
+
   public async updateProjectUser(data: UpdateProjectUserRequest) {
     const response = await projectUserApiService.updateProjectUser(data);
-    const index = this._users.findIndex((user) => user.id === response.id);
+    const index = this._users.findIndex((user) => user.userId === response.userId);
 
     if (index !== -1) {
       runInAction(() => {
@@ -78,7 +87,7 @@ class ProjectUserStore {
     await projectUserApiService.removeProjectUser(data);
 
     runInAction(() => {
-      this._users = this._users.filter((user) => user.id !== data.id);
+      this._users = this._users.filter((user) => user.userId !== data.id);
     });
   }
 
@@ -86,7 +95,7 @@ class ProjectUserStore {
     await projectUserApiService.removeManyProjectUsers(data);
 
     runInAction(() => {
-      this._users = this._users.filter((user) => !data.ids.includes(user.id));
+      this._users = this._users.filter((user) => !data.ids.includes(user.userId));
     });
   }
 }
