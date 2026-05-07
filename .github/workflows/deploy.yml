@@ -52,10 +52,10 @@ jobs:
           echo "Building and pushing Docker image to Amazon ECR..."
           echo "${{ github.sha }}"
           IMAGE_TAG=${{ github.sha }}
-        
+          
           docker build -t ${{ env.AWS_ECR_REPOSITORY }}:$IMAGE_TAG .
           docker push ${{ env.AWS_ECR_REPOSITORY }}:$IMAGE_TAG
-        
+          
           echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
           echo "DOCKER_IMAGE_URI=${{ env.AWS_ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_ENV
 
@@ -64,24 +64,11 @@ jobs:
         run: |
           envsubst < aspnetcore-task-definition-template.json > aspnetcore-task-definition.json
 
-      - name: Register ECS task definition
-        id: register-task
-        working-directory: deploy/ecs
-        run: |
-          TASK_DEF_ARN=$(aws ecs register-task-definition \
-            --cli-input-json file://aspnetcore-task-definition.json \
-            --query 'taskDefinition.taskDefinitionArn' \
-            --output text)
-          echo "AWS_ECS_TASK_DEFINITION_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
-
-      - name: Update ECS service
-        run: |
-          aws ecs update-service \
-          --cluster ${{ env.AWS_ECS_CLUSTER_NAME }} \
-          --service ${{ env.AWS_ECS_SERVICE_NAME }} \
-          --task-definition ${{ env.AWS_ECS_TASK_DEFINITION_ARN }}
-          
-          aws ecs wait services-stable \
-          --cluster ${{ env.AWS_ECS_CLUSTER_NAME }} \
-          --services ${{ env.AWS_ECS_SERVICE_NAME }}
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: deploy/ecs/aspnetcore-task-definition.json
+          service: ${{ env.AWS_ECS_SERVICE_NAME }}
+          cluster:  ${{ env.AWS_ECS_CLUSTER_NAME }}
+          wait-for-service-stability: true
           
