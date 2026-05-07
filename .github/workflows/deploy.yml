@@ -60,13 +60,13 @@ jobs:
           echo "DOCKER_IMAGE_URI=${{ env.AWS_ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_ENV
 
       - name: Generate ECS task definition
-        working-directory: src/deploy/ecs
+        working-directory: deploy/ecs
         run: |
           envsubst < aspnetcore-task-definition-template.json > aspnetcore-task-definition.json
 
       - name: Register ECS task definition
         id: register-task
-        working-directory: src/deploy/ecs
+        working-directory: deploy/ecs
         run: |
           TASK_DEF_ARN=$(aws ecs register-task-definition \
             --cli-input-json file://aspnetcore-task-definition.json \
