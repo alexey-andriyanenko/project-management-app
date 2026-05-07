@@ -8,6 +8,7 @@ namespace Facade.TagManagement.Controllers;
 [Route("api/v1/tenants/{tenantId}/tags")]
 public class TagManagementController(ITagManagementService tagManagementService) : ControllerBase
 {
+    [HttpGet]
     public async Task<Contracts.Results.GetManyTagsByTenantIdResult> GetManyByTenantIdAsync(
         [FromRoute] Guid tenantId,
         [FromQuery] Guid? projectId,

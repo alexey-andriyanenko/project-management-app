@@ -1,0 +1,69 @@
+﻿{
+  "family": "$AWS_ECS_TASK_DEFINITION_FAMILY",
+  "taskRoleArn": "$AWS_ECS_TASK_ROLE_ARN",
+  "executionRoleArn": "$AWS_ECS_TASK_EXECUTION_ROLE_ARN",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "aspnetcore-backend",
+      "image": "$DOCKER_IMAGE_URI",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "ASPNETCORE_ENVIRONMENT",
+          "value": "$ASPNETCORE_ENVIRONMENT"
+        },
+        {
+          "name": "ASPNETCORE_URLS",
+          "value": "http://0.0.0.0:8080"
+        },
+        {
+          "name": "AWS_REGION",
+          "value": "$AWS_REGION"
+        }
+      ],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "$AWS_ECS_LOG_GROUP_NAME",
+          "awslogs-create-group": "true",
+          "awslogs-region": "$AWS_REGION",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      },
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost/health || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3
+      },
+      "systemControls": []
+    }
+  ],
+  "volumes": [],
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+    "EC2"
+  ],
+  "cpu": "512",
+  "memory": "1024",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "enableFaultInjection": false
+}

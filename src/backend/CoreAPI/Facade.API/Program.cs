@@ -9,6 +9,7 @@ using Infrastructure.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
@@ -107,16 +108,14 @@ builder.Services
             .RequireAuthenticatedUser()
             .Build();
         options.Filters.Add(new AuthorizeFilter(policy));
+        // Allow anonymous access to Swagger endpoints
+        // options.Filters.Add(new AllowAnonymousFilterForSwagger());
     });
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Facade.API",
-        Version = "v1"
-    });
+    c.CustomSchemaIds(type => type.FullName);
 });
 
 builder.Services.AddHealthChecks();
@@ -127,7 +126,7 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Facade.API v1");
-    c.RoutePrefix = string.Empty;
+    c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
 });
 
 app.UseCors("AllowAll");
@@ -139,3 +138,17 @@ app.UseHealthChecks("/health");
 app.MapControllers();
 
 await app.RunAsync();
+
+// public class AllowAnonymousFilterForSwagger : IAuthorizationFilter
+// {
+//     public void OnAuthorization(AuthorizationFilterContext context)
+//     {
+//         var endpoint = context.HttpContext.GetEndpoint();
+//         if (endpoint != null && endpoint.DisplayName != null &&
+//             (endpoint.DisplayName.Contains("swagger", StringComparison.OrdinalIgnoreCase) ||
+//              endpoint.DisplayName.Contains("OpenAPI", StringComparison.OrdinalIgnoreCase)))
+//         {
+//             context.Filters.Add(new AllowAnonymousFilter());
+//         }
+//     }
+// }

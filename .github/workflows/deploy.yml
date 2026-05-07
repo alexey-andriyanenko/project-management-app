@@ -1,4 +1,4 @@
-name: Build & Push Docker Image to ECR
+name: Deploy to AWS ECS
 
 on:
   push:
@@ -13,16 +13,20 @@ env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
   AWS_GITHUB_OIDC_ROLE_ARN: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
   AWS_SECRETS_MANAGER_SECRET_NAME: ${{ secrets.AWS_SECRETS_MANAGER_SECRET_NAME }}
-  EC2_HOST: ${{ secrets.EC2_HOST }}
-  EC2_USER: ${{ secrets.EC2_USER }}
-  EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-  ECR_URI: ${{ secrets.ECR_URI }}
-  IMAGE_TAG: latest
+  AWS_ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
+  AWS_ECS_CLUSTER_NAME: ${{ secrets.AWS_ECS_CLUSTER_NAME }}
+  AWS_ECS_SERVICE_NAME: ${{ secrets.AWS_ECS_SERVICE_NAME }}
+  AWS_ECS_TASK_DEFINITION_FAMILY: ${{ secrets.AWS_ECS_TASK_DEFINITION_FAMILY }}
+  AWS_ECS_TASK_DEFINITION_DESIRED_COUNT: ${{ secrets.AWS_ECS_TASK_DEFINITION_DESIRED_COUNT }}
+  AWS_ECS_LOG_GROUP_NAME: ${{ secrets.AWS_ECS_LOG_GROUP_NAME }}
+  AWS_ECS_TASK_ROLE_ARN: ${{ secrets.AWS_TASK_ROLE_ARN }}
+  AWS_ECS_TASK_EXECUTION_ROLE_ARN: ${{ secrets.AWS_TASK_EXECUTION_ROLE_ARN }}
+  AWS_SUBNETS: ${{ secrets.AWS_SUBNETS }}
+  AWS_SECURITY_GROUPS: ${{ secrets.AWS_SECURITY_GROUPS }}
+  AWS_S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+  AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
   DOCKER_CONTAINER: ${{ secrets.DOCKER_CONTAINER }}
-  ASPNETCORE_PORT: ${{ secrets.ASPNETCORE_PORT }}
   VITE_API_URL: ${{ secrets.VITE_API_URL }}
-  S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
-  CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
 
 jobs:
   backend:
@@ -41,106 +45,36 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build Docker image
+      - name: Build & Push Docker image
         working-directory: src/backend/CoreAPI
         run: |
-          docker build -t ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }} -t ${{ env.ECR_URI }}:${{ github.sha }} .
+          echo "IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
+          docker build -t $AWS_ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $AWS_ECR_REPOSITORY:$IMAGE_TAG
+          echo "DOCKER_IMAGE_URI=$AWS_ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
-      - name: Push Docker image tags
+      - name: Generate ECS task definition
+        working-directory: src/deploy/ecs
         run: |
-          docker push ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}
-          docker push ${{ env.ECR_URI }}:${{ github.sha }}
+          envsubst < aspnetcore-task-definition-template.json > aspnetcore-task-definition.json
 
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ env.EC2_HOST }}
-          username: ${{ env.EC2_USER }}
-          key: ${{ env.EC2_SSH_KEY }}
-          script: |
-            aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_URI }}
-            docker pull ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}
-            docker stop ${{ env.DOCKER_CONTAINER }} || true
-            docker rm ${{ env.DOCKER_CONTAINER }} || true
-            docker run -d --name ${{ env.DOCKER_CONTAINER }} \
-            -p 80:${{ env.ASPNETCORE_PORT }} \
-            -e ASPNETCORE_URLS="http://+:${{ env.ASPNETCORE_PORT }}" \
-            -e ASPNETCORE_ENVIRONMENT=Production \
-            -e AWS_REGION=${{ env.AWS_REGION }} \
-            -e AWS_SECRETS_MANAGER_SECRET_NAME=${{ env.AWS_SECRETS_MANAGER_SECRET_NAME }} \
-            ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}
-            docker image prune -f
-
-  migrations:
-    runs-on: ubuntu-latest
-    needs: backend
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ env.AWS_GITHUB_OIDC_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Install dependencies
-        working-directory: src/backend/CoreAPI
-        run: dotnet restore
-
-      - name: Restore .NET tools
-        working-directory: src/backend/CoreAPI
-        run: dotnet tool restore
-
-      - name: Apply Database Migrations
-        run: bash scripts/apply_all_migrations.sh
-        env:
-          AWS_REGION: ${{ env.AWS_REGION }}
-          AWS_SECRETS_MANAGER_SECRET_NAME: ${{ env.AWS_SECRETS_MANAGER_SECRET_NAME }}
-
-  frontend:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ env.AWS_GITHUB_OIDC_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: src/frontend/package-lock.json
-
-      - name: Create frontend env file
-        working-directory: src/frontend
+      - name: Register ECS task definition
+        id: register-task
         run: |
-          echo "VITE_API_URL=${{ env.VITE_API_URL }}" > .env.production
+          TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://aspnetcore-task-definition.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          echo "AWS_ECS_TASK_DEFINITION_ARN=$TASK_DEF_ARN" >> $GITHUB_ENV
 
-      - name: Build react app
-        working-directory: src/frontend
+      - name: Update ECS service
         run: |
-          npm ci
-          npm run build:prod
-
-      - name: Sync to s3
-        working-directory: src/frontend
-        run: |
-          aws s3 sync ./dist s3://${{ env.S3_BUCKET_NAME }} --delete --cache-control "public, max-age=0, must-revalidate"
-
-      - name: Invalidate CloudFront cache
-        if: env.CLOUDFRONT_DISTRIBUTION_ID != ''
-        run: |
-          aws cloudfront create-invalidation --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          aws ecs update-service \
+          --cluster $AWS_ECS_CLUSTER_NAME \
+          --service $AWS_ECS_SERVICE_NAME \
+          --task-definition $AWS_ECS_TASK_DEFINITION_ARN
+          
+          aws ecs wait services-stable \
+          --cluster $AWS_ECS_CLUSTER_NAME \
+          --services $AWS_ECS_SERVICE_NAME
+          
