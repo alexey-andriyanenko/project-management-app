@@ -49,6 +49,8 @@ jobs:
         working-directory: src/backend/CoreAPI
         run: |
           run: |
+          echo "Building and pushing Docker image to Amazon ECR..."
+          echo "${{ github.sha }}"
           IMAGE_TAG=${{ github.sha }}
         
           docker build -t ${{ env.AWS_ECR_REPOSITORY }}:$IMAGE_TAG .
