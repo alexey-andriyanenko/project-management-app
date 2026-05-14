@@ -8,9 +8,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddTenantDataAccess(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<TenantDbContext>((sp, options) =>
-        {
-            var connectionString = configuration.GetConnectionString("TenantManagementDb");
+        services.AddDbContext<TenantDbContext>((sp, options) => {
+            var connectionString = configuration["TenantManagementService:DbConnection"];
             
             options.UseNpgsql(connectionString, npgsqlOptions =>
             {

@@ -8,9 +8,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddProjectDataAccess(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<ProjectDbContext>((sp, options) =>
-        {
-            var connectionString = configuration.GetConnectionString("ProjectManagementDb");
+        services.AddDbContext<ProjectDbContext>((sp, options) => {
+            var connectionString = configuration["ProjectManagementService:DbConnection"];
             
             options.UseNpgsql(connectionString, npgsqlOptions =>
             {

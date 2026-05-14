@@ -8,9 +8,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddTagDataAccess(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<TagDbContext>((sp, options) =>
-        {
-            var connectionString = configuration.GetConnectionString("TagManagementDb");
+        services.AddDbContext<TagDbContext>((sp, options) => {
+            var connectionString = configuration["TagManagementService:DbConnection"];
             
             options.UseNpgsql(connectionString, npgsqlOptions =>
             {

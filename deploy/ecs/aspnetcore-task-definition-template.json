@@ -26,8 +26,8 @@
           "value": "http://0.0.0.0:8080"
         },
         {
-          "name": "AWS_REGION",
-          "value": "$AWS_REGION"
+          "name": "AWS_SYSTEM_MANAGER_PATH",
+          "value": "$AWS_SYSTEM_MANAGER_PATH"
         }
       ],
       "mountPoints": [],
