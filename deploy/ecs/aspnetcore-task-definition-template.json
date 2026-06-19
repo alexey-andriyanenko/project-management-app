@@ -6,7 +6,7 @@
   "containerDefinitions": [
     {
       "name": "aspnetcore-backend",
-      "image": "$DOCKER_IMAGE_URI",
+      "image": "$API_DOCKER_IMAGE_URI",
       "cpu": 0,
       "portMappings": [
         {
@@ -41,15 +41,6 @@
           "awslogs-stream-prefix": "ecs"
         },
         "secretOptions": []
-      },
-      "healthCheck": {
-        "command": [
-          "CMD-SHELL",
-          "curl -f http://localhost:8080/health || exit 1"
-        ],
-        "interval": 30,
-        "timeout": 5,
-        "retries": 3
       },
       "systemControls": []
     }

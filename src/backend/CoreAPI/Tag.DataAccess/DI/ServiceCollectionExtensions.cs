@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Database.MigrationsRunner.Contracts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,6 +18,7 @@ public static class ServiceCollectionExtensions
             });
         });
 
+        services.AddScoped<IModuleMigrationsRunner, TagModuleMigrationsRunner>();
         
         return services;
     }

@@ -74,6 +74,50 @@ public class BoardDbContext(DbContextOptions<BoardDbContext> options) : DbContex
             };
         });
         
+        optionsBuilder.UseAsyncSeeding((context, _, token) =>
+        {
+            var boardTypesContext = context.Set<BoardTypeEntity>();
+
+            if (boardTypesContext.Any())
+            {
+                return Task.CompletedTask;
+            }
+            
+            var defaultBoardTypes = new List<BoardTypeEntity>
+            {
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Kanban",
+                    IsEssential = true,
+                    TenantId = Guid.Empty
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Scrum",
+                    IsEssential = true,
+                    TenantId = Guid.Empty
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Backlog",
+                    IsEssential = true,
+                    TenantId = Guid.Empty
+                },
+                new()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Custom",
+                    IsEssential = false,
+                    TenantId = Guid.Empty
+                }
+            };
+
+            return boardTypesContext.AddRangeAsync(defaultBoardTypes, token);
+        });
+        
         base.OnConfiguring(optionsBuilder);
     }
 }

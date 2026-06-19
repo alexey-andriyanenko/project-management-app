@@ -97,6 +97,7 @@ builder.Services.AddHealthChecks();
 
 var app = builder.Build();
 
+app.UseHealthChecks("/health");
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -105,10 +106,9 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseCors("AllowAll");
-app.UseHttpsRedirection();
+app.MapHealthChecks("/health");
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseHealthChecks("/health");
 
 app.MapControllers();
 

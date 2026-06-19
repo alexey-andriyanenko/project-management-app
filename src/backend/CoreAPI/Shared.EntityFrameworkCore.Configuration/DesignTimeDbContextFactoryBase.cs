@@ -12,7 +12,7 @@ namespace Shared.EntityFrameworkCore.Configuration
         public TContext CreateDbContext(string[] args)
         {
             var basePath = Directory.GetCurrentDirectory();
-            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+            var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production";
 
             var config = new ConfigurationBuilder()
                 .SetBasePath(basePath)
@@ -22,7 +22,7 @@ namespace Shared.EntityFrameworkCore.Configuration
                 .Build();
             
             var connName = GetConnectionStringName();
-            var conn = config.GetConnectionString(connName)
+            var conn = config[connName]
                        ?? throw new InvalidOperationException($"Connection string '{connName}' not found.");
 
             var optionsBuilder = new DbContextOptionsBuilder<TContext>();

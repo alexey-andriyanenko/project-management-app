@@ -8,24 +8,14 @@ on:
 permissions:
   id-token: write
   contents: read
-
 env:
   AWS_REGION: ${{ secrets.AWS_REGION }}
-  AWS_GITHUB_OIDC_ROLE_ARN: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
   AWS_SECRETS_MANAGER_SECRET_NAME: ${{ secrets.AWS_SECRETS_MANAGER_SECRET_NAME }}
-  AWS_ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
-  AWS_ECS_CLUSTER_NAME: ${{ secrets.AWS_ECS_CLUSTER_NAME }}
-  AWS_ECS_SERVICE_NAME: ${{ secrets.AWS_ECS_SERVICE_NAME }}
   AWS_ECS_TASK_DEFINITION_FAMILY: ${{ secrets.AWS_ECS_TASK_DEFINITION_FAMILY }}
-  AWS_ECS_TASK_DEFINITION_DESIRED_COUNT: ${{ secrets.AWS_ECS_TASK_DEFINITION_DESIRED_COUNT }}
   AWS_ECS_LOG_GROUP_NAME: ${{ secrets.AWS_ECS_LOG_GROUP_NAME }}
   AWS_ECS_TASK_ROLE_ARN: ${{ secrets.AWS_ECS_TASK_ROLE_ARN }}
   AWS_ECS_TASK_EXECUTION_ROLE_ARN: ${{ secrets.AWS_ECS_TASK_EXECUTION_ROLE_ARN }}
-  AWS_S3_BUCKET_NAME: ${{ secrets.AWS_S3_BUCKET_NAME }}
-  AWS_CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }}
   AWS_SYSTEM_MANAGER_PATH: ${{ secrets.AWS_SYSTEM_MANAGER_PATH }}
-  DOCKER_CONTAINER: ${{ secrets.DOCKER_CONTAINER }}
-  VITE_API_URL: ${{ secrets.VITE_API_URL }}
 
 jobs:
   backend:
@@ -38,37 +28,65 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.AWS_GITHUB_OIDC_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build & Push Docker image
+      - name: Build & Push Migrations Runner Image
         working-directory: src/backend/CoreAPI
         run: |
-          run: |
           echo "Building and pushing Docker image to Amazon ECR..."
           echo "${{ github.sha }}"
           IMAGE_TAG=${{ github.sha }}
           
-          docker build -t ${{ env.AWS_ECR_REPOSITORY }}:$IMAGE_TAG .
-          docker push ${{ env.AWS_ECR_REPOSITORY }}:$IMAGE_TAG
+          docker build -t ${{ secrets.AWS_ECR_MIGRATIONS_RUNNER_URI }}:$IMAGE_TAG . -f Dockerfile_migrations
+          docker push ${{ secrets.AWS_ECR_MIGRATIONS_RUNNER_URI }}:$IMAGE_TAG
           
-          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
-          echo "DOCKER_IMAGE_URI=${{ env.AWS_ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_ENV
+          echo "MIGRATIONS_RUNNER_IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          echo "MIGRATIONS_RUNNER_DOCKER_IMAGE_URI=${{ secrets.AWS_ECR_MIGRATIONS_RUNNER_URI }}:$IMAGE_TAG" >> $GITHUB_ENV
+        
+      - name: Create ECS task definition for Migrations Runner
+        working-directory: deploy/ecs
+        run: |
+          envsubst < aspnetcore-migration-runner-task-definition-template.json > aspnetcore-migration-runner-task-definition.json
+          
+      - name: Run DB migrations
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+        with:
+          task-definition: deploy/ecs/aspnetcore-migration-runner-task-definition.json
+          cluster: ${{ secrets.AWS_ECS_CLUSTER_NAME }}
+          run-task: true
+          wait-for-task-stopped: true
+          run-task-subnets: ${{ secrets.AWS_SUBNETS }}
+          run-task-security-groups: ${{ secrets.AWS_SECURITY_GROUPS }}
+          run-task-assign-public-IP: ENABLED
+      
+      - name: Build & Push Docker image
+        working-directory: src/backend/CoreAPI
+        run: |
+          echo "Building and pushing Docker image to Amazon ECR..."
+          echo "${{ github.sha }}"
+          IMAGE_TAG=${{ github.sha }}
+          
+          docker build -t ${{ secrets.AWS_ECR_API_URI }}:$IMAGE_TAG . -f Dockerfile_api
+          docker push ${{ secrets.AWS_ECR_API_URI }}:$IMAGE_TAG
+          
+          echo "API_IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          echo "API_DOCKER_IMAGE_URI=${{ secrets.AWS_ECR_API_URI }}:$IMAGE_TAG" >> $GITHUB_ENV
 
-      - name: Generate ECS task definition
+      - name: Create ECS task definition for API service
         working-directory: deploy/ecs
         run: |
           envsubst < aspnetcore-task-definition-template.json > aspnetcore-task-definition.json
 
-      - name: Deploy to Amazon ECS
+      - name: Deploy API service to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v2
         with:
           task-definition: deploy/ecs/aspnetcore-task-definition.json
-          service: ${{ env.AWS_ECS_SERVICE_NAME }}
-          cluster:  ${{ env.AWS_ECS_CLUSTER_NAME }}
+          service: ${{ secrets.AWS_ECS_SERVICE_NAME }}
+          cluster: ${{ secrets.AWS_ECS_CLUSTER_NAME }}
           wait-for-service-stability: true
   frontend:
     runs-on: ubuntu-latest
@@ -80,8 +98,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.AWS_GITHUB_OIDC_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_GITHUB_OIDC_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -93,7 +111,7 @@ jobs:
       - name: Create frontend env file
         working-directory: src/frontend
         run: |
-          echo "VITE_API_URL=${{ env.VITE_API_URL }}" > .env.production
+          echo "VITE_API_URL=${{ secrets.VITE_API_URL }}" > .env.production
 
       - name: Build react app
         working-directory: src/frontend
@@ -104,8 +122,8 @@ jobs:
       - name: Sync to s3
         working-directory: src/frontend
         run: |
-          aws s3 sync ./dist s3://${{ env.AWS_S3_BUCKET_NAME }} --delete --cache-control "public, max-age=0, must-revalidate"
+          aws s3 sync ./dist s3://${{ secrets.AWS_S3_BUCKET_NAME }} --delete --cache-control "public, max-age=0, must-revalidate"
 
       - name: Invalidate CloudFront cache
         run: |
-          aws cloudfront create-invalidation --distribution-id ${{ env.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"

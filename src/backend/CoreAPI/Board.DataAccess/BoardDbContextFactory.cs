@@ -5,7 +5,7 @@ namespace Board.DataAccess;
 
 public class BoardDbContextFactory : DesignTimeDbContextFactoryBase<BoardDbContext>
 {
-    protected override string GetConnectionStringName() => "BoardManagementDb";
+    protected override string GetConnectionStringName() => "BoardManagementService:DbConnection";
 
     protected override BoardDbContext CreateNewInstance(DbContextOptions<BoardDbContext> options) =>
         new BoardDbContext(options);

@@ -1,4 +1,5 @@
 ﻿using Identity.DataAccess.Entities;
+using Infrastructure.Database.MigrationsRunner.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,8 @@ public static class ServiceCollectionExtensions
         services.AddIdentity<UserEntity, IdentityRole<Guid>>()
             .AddEntityFrameworkStores<IdentityDbContext>()
             .AddDefaultTokenProviders();
+
+        services.AddScoped<IModuleMigrationsRunner, IdentityModuleMigrationsRunner>();
 
         return services;
     }

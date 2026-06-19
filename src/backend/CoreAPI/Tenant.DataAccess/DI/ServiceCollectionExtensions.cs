@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Infrastructure.Database.MigrationsRunner.Contracts;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +17,8 @@ public static class ServiceCollectionExtensions
                 npgsqlOptions.MigrationsAssembly(typeof(TenantDbContext).Assembly.FullName);
             });
         });
+
+        services.AddScoped<IModuleMigrationsRunner, TenantModuleMigrationsRunner>();
         
         return services;
     }

@@ -1,0 +1,60 @@
+﻿{
+  "family": "aspnetcore-migrations-runner-task-definition",
+  "taskRoleArn": "$AWS_ECS_TASK_ROLE_ARN",
+  "executionRoleArn": "$AWS_ECS_TASK_EXECUTION_ROLE_ARN",
+  "networkMode": "awsvpc",
+  "volumes": [],
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "1024",
+  "memory": "2048",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "enableFaultInjection": false,
+  "containerDefinitions": [
+    {
+      "name": "aspnetcore-migrations-runner",
+      "image": "$MIGRATIONS_RUNNER_DOCKER_IMAGE_URI",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp",
+          "name": "aspnetcore-migrations-runner-80-tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "DOTNET_ENVIRONMENT",
+            "value": "Production"
+        },
+        {
+          "name": "AWS_SYSTEM_MANAGER_PATH",
+          "value": "$AWS_SYSTEM_MANAGER_PATH"
+        }
+      ],
+      "environmentFiles": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "ulimits": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/aspnetcore-migrations-runner-task-definition",
+          "awslogs-create-group": "true",
+          "awslogs-region": "eu-north-1",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      },
+      "systemControls": []
+    }
+  ]
+}

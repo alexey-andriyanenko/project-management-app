@@ -3,6 +3,7 @@ using System;
 using Board.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Board.DataAccess.Migrations
 {
     [DbContext(typeof(BoardDbContext))]
-    partial class BoardDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260618131445_AddBoardColumnFkToTasks")]
+    partial class AddBoardColumnFkToTasks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

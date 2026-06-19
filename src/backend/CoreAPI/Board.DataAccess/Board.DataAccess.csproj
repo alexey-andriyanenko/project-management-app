@@ -19,6 +19,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Infrastructure.Database.MigrationsRunner.Contracts\Infrastructure.Database.MigrationsRunner.Contracts.csproj" />
       <ProjectReference Include="..\Shared.EntityFrameworkCore.Configuration\Shared.EntityFrameworkCore.Configuration.csproj" />
     </ItemGroup>
 
